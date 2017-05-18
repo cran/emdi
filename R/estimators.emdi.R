@@ -29,11 +29,11 @@ estimators <- function(object, ...) UseMethod("estimators")
 #' (ii) each indicator name: "Mean" "Quantile_10", "Quantile_25", "Median",
 #' "Quantile_75", "Quantile_90", "Head_Count", "Poverty_Gap", "Gini", 
 #' "Quintile_Share" or the function name/s of "custom_indicator/s"; 
-#' (ii) groups of indicators: "Quantiles", "Poverty", "Inequality" or "Custom". 
+#' (iii) groups of indicators: "Quantiles", "Poverty", "Inequality" or "Custom". 
 #' Defaults to "all". Note, additional custom indicators can be 
-#' defined as argument for model-based approaches (\code{link{ebp}}) and do not 
-#' appear in groups of indicators even though these might belong to one of the 
-#' groups.  
+#' defined as argument for model-based approaches (see also \code{\link{ebp}}) 
+#' and do not appear in groups of indicators even though these might belong to 
+#' one of the groups.  
 #' @param MSE optional logical. If TRUE, MSE estimates for selected indicators
 #' per domain are added to the data frame of point estimates. Defaults to FALSE.
 #' @param CV optional logical. If TRUE, coefficients of variation for selected
@@ -46,30 +46,37 @@ estimators <- function(object, ...) UseMethod("estimators")
 #' \code{emdiObject$ind} and, if chosen, \code{emdiObject$MSE}. These objects 
 #' contain two elements, one data frame \code{ind} and a character naming the 
 #' indicator or indicator group \code{ind_name}.
-#' @seealso \code{\link{emdiObject}}, \code{\link{ebp}}
+#' @seealso \code{\link{emdiObject}}, \code{\link{direct}}, \code{\link{ebp}}
 #' @examples
+#' \dontrun{
 #' # Loading data - population and sample data
 #' data("eusilcA_pop")
-#' data("eusilcA_pop")
+#' data("eusilcA_smp")
 #'
 #' # generate emdi object with additional indicators; here via function ebp()
-#' set.seed(100); emdi_model <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
+#' emdi_model <- ebp(fixed = eqIncome ~ gender + eqsize + cash + 
 #' self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
 #' fam_allow + house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
 #' pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district",
-#' pov_line = 10722.66, transformation = "box.cox", L= 1, MSE = TRUE, B = 1,
-#' custom_indicator = list( my_max = function(y, pov_line){max(y)},
-#' my_min = function(y, pov_line){min(y)}), na.rm = TRUE, cpus = 1)
+#' threshold = 11064.82, transformation = "box.cox", 
+#' L= 50, MSE = TRUE, B = 50, custom_indicator = 
+#' list( my_max = function(y, threshold){max(y)},
+#' my_min = function(y, threshold){min(y)}), na.rm = TRUE, cpus = 1)
 #'
 #' # choose Gini coefficient and MSE and CV
 #' estimators(emdi_model, indicator = "Gini", MSE = TRUE, CV = TRUE)
 #' 
 #' # choose custom indicators without MSE and CV
 #' estimators(emdi_model, indicator = "Custom")
+#' }
 #' @export
 
 estimators.emdi <- function(object, indicator = "all", MSE = FALSE, CV = FALSE, ...) {
 
+  if(!any(class(object)=="emdi")){
+    stop('First object needs to be of class emdi.')
+  }
+  
   if (is.null(object$MSE) && (MSE == TRUE || CV == TRUE)){
     stop('No MSE estimates in object: arguments MSE and CV have to be FALSE')
   }
@@ -113,38 +120,133 @@ print.estimators.emdi <- function(x,...) {
 
 # Tail/head functions ----------------------------------------------------------
 
-#' Returns the first part of predicted indicators
+#' Returns the first part of predicted indicators and, if chosen, of MSE and 
+#' CV estimators.
 #'
 #' @param x an object of type "estimators.emdi", representing 
 #' point estimators and, if chosen, MSE and/or CV estimates for selected 
 #' indicators.
 #' @param n a single integer. If positive, it determines the number of rows for 
-#' the data frame. If negative, all but the n last/first rows of
+#' the data frame. If negative, all but the n last rows of
 #' elements of the object.
 #' @param addrownums if there are no row names, create them from the row numbers.
 #' @param ... arguments to be passed to or from other methods. 
 #' @return Selected rows of the object of type "estimators.emdi".
+#' @seealso \code{\link{estimators.emdi}}
+#' @examples
+#' \dontrun{
+#' # Loading data - population and sample data
+#' data("eusilcA_pop")
+#' data("eusilcA_smp")
+#' 
+#' # generate emdi object with deleting missing values; here via function ebp()
+#' emdi_model <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
+#' self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
+#' fam_allow + house_allow + cap_inv + tax_adj,
+#' pop_data = eusilcA_pop, pop_domains = "district",
+#' smp_data = eusilcA_smp, smp_domains = "district",
+#' na.rm = TRUE)
+#'
+#' # choose first lines of the Gini coefficient, MSE and CV
+#' head(estimators(emdi_model, indicator = c("Gini", "Head_Count")))
+#' }
 #' @importFrom utils head
 #' @export
 head.estimators.emdi <- function(x, n = 6L, addrownums=NULL, ...) {
   head(x$ind, n = n, addrownums = addrownums, ...)
 }
 
-#' Returns the last part of predicted indicators
+#' Returns the last part of predicted indicators and, if chosen, of MSE and 
+#' CV estimators.
 #'
 #' @param x an object of type "estimators.emdi", representing 
 #' point estimators and, if chosen, MSE and/or CV estimates for selected 
 #' indicators.
 #' @param n a single integer. If positive, it determines the number of rows for 
-#' the data frame. If negative, all but the n last/first rows of
+#' the data frame. If negative, all but the n first rows of
 #' elements of the object.
 #' @param addrownums if there are no row names, create them from the row numbers.
 #' @param ... arguments to be passed to or from other methods. 
 #' @return Selected rows of the object of type "estimators.emdi".
+#' @seealso \code{\link{estimators.emdi}}
+#' @examples
+#' \dontrun{
+#' # Loading data - population and sample data
+#' data("eusilcA_pop")
+#' data("eusilcA_smp")
+#' 
+#' # generate emdi object with deleting missing values; here via function ebp()
+#' set.seed(100); emdi_model <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
+#' self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
+#' fam_allow + house_allow + cap_inv + tax_adj,
+#' pop_data = eusilcA_pop, pop_domains = "district",
+#' smp_data = eusilcA_smp, smp_domains = "district",
+#' na.rm = TRUE)
+#'
+#' # choose last lines of the Gini coefficient, MSE and CV
+#' tail(estimators(emdi_model, indicator = c("Gini", "Head_Count")))
+#' }
 #' @importFrom utils tail
 #' @export
 
 tail.estimators.emdi <- function(x, n = 6L, addrownums=NULL, ...) {
   tail(x$ind, n = n, addrownums = addrownums, ...)
 }
+
+
+#' Transforms estimators.emdi objects into a matrix object
+#'
+#' @param x an object of type "estimators.emdi".
+#' @param ... further arguments passed to or from other methods.
+#' @export
+
+as.matrix.estimators.emdi <- function(x,...) {
+  as.matrix(x$ind[,-1])
+}
+
+#' Transforms estimators.emdi objects into a dataframe object
+#'
+#' @param x an object of type "estimators.emdi".
+#' @param ... further arguments passed to or from other methods.
+#' @export
+
+as.data.frame.estimators.emdi <- function(x,...) {
+  as.data.frame(x$ind, ...)
+}
+
+#' Subsets an estimators.emdi object
+#' 
+#' @param x an object of type "estimators.emdi".
+#' @param ... further arguments passed to or from other methods.
+#' @return Selected subsets of the object of type "estimators.emdi".
+#' @seealso \code{\link{estimators.emdi}}
+#' @examples
+#' \dontrun{
+#' # Loading data - population and sample data
+#' data("eusilcA_pop")
+#' data("eusilcA_smp")
+#' 
+#' # generate emdi object with deleting missing values; here via function ebp()
+#' set.seed(100); emdi_model <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
+#' self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
+#' fam_allow + house_allow + cap_inv + tax_adj,
+#' pop_data = eusilcA_pop, pop_domains = "district",
+#' smp_data = eusilcA_smp, smp_domains = "district",
+#' na.rm = TRUE)
+#'
+#' # choose last lines of the Gini coefficient, MSE and CV
+#' subset(estimators(emdi_model, indicator = "Gini"), 
+#'        Domain %in% c("Wien", "Wien Umgebung"))
+#' }
+#' @export
+
+subset.estimators.emdi <- function(x, ...) {
+  x <- as.data.frame(x)
+  subset(x = x,  ...)
+}
+
+
+
+
+
 

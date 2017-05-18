@@ -1,33 +1,42 @@
 # External documentation -------------------------------------------------------
 
-#' Visualises regional disaggregrated estimates on a map
+#' Visualizes regional disaggregrated estimates on a map
 #'
-#' Function \code{map_plot} creates spatial visualisations of the estimates
+#' Function \code{map_plot} creates spatial visualizations of the estimates
 #' obtained by small area estimation methods or direct estimation.
 #'
 #' @param object an object of type emdi, containing the estimates to be 
-#' visualised.
+#' visualized.
 #' @param indicator optional character vector that selects which indicators
 #' shall be returned: (i) all calculated indicators ("all");
 #' (ii) each indicator name: "Mean" "Quantile_10", "Quantile_25", "Median",
 #' "Quantile_75", "Quantile_90", "Head_Count", "Poverty_Gap", "Gini", 
 #' "Quintile_Share" or the function name/s of "custom_indicator/s"; 
-#' (ii) groups of indicators: "Quantiles", "Poverty" or 
+#' (iii) groups of indicators: "Quantiles", "Poverty" or 
 #' "Inequality". Defaults to "all". Note, additional custom indicators can be 
-#' defined as argument for model-based approaches (\code{link{ebp}}) and do not 
-#' appear in groups of indicators even though these might belong to one of the 
-#' groups.  
-#' @param MSE optional logical. If TRUE, the MSE is also visualised.
-#' @param CV optional logical. If TRUE, the CV is also visualised.
+#' defined as argument for model-based approaches (see also \code{\link{ebp}}) 
+#' and do not appear in groups of indicators even though these might belong to 
+#' one of the groups.  
+#' @param MSE optional logical. If TRUE, the MSE is also visualized.
+#' @param CV optional logical. If TRUE, the CV is also visualized.
 #' @param map_obj an \code{SpatialPolygonsDataFrame} object as defined by the
-#' \code{sp} package on which the data should be visualised.
+#' \code{sp} package on which the data should be visualized.
 #' @param map_dom_id a character string containing the name of a variable in
 #' \code{map_obj} that indicates the domains. 
 #' @param map_tab a \code{data.frame} object with two columns that match the 
 #' domain variable from the census data set (first column) with the domain 
 #' variable in the map_obj (second column). This should only be used if the IDs 
 #' in both objects differ.
-#' @param col A \code{vector} of length 3 defining the lowest, mid and highest color in the plots
+#' @param col A \code{vector} of length 2 defining the lowest and highest 
+#' color in the plots
+#' @param scale_points a structure defining the lowest, the mid and the highest 
+#' value of the colorscale. If a numeric vector of length two is given, this scale
+#' will be used for every plot. Alternatively a list defining colors for each 
+#' plot seperatly may be given. Please see the details section and examples for 
+#' this. 
+#' @param return_data if set to true a fortified data frame including the 
+#' map data as well as the chosen indicators is returned. Customized can easily 
+#' be obtained from this data frame via the package \code{ggmap}. Defaults to false
 #' @return creates the plots demanded
 #' @seealso \code{\link{ebp}}, \code{\link{emdiObject}},
 #' \code{\link[maptools]{readShapePoly}}
@@ -35,37 +44,32 @@
 #' \dontrun{
 #' # Loading data - population and sample data
 #' data("eusilcA_pop")
-#' data("eusilcA_pop")
+#' data("eusilcA_smp")
 #' 
 #' # generate emdi object with additional indicators; here via function ebp()
-#' set.seed(100); emdi_model <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
+#' emdi_model <- ebp(fixed = eqIncome ~ gender + eqsize + cash + 
 #' self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
 #' fam_allow + house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
 #' pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district",
-#' pov_line = 10722.66, transformation = "box.cox", L= 1, MSE = TRUE, B = 1,
-#' custom_indicator = list( my_max = function(y, pov_line){max(y)},
-#' my_min = function(y, pov_line){min(y)}), na.rm = TRUE, cpus = 1)
+#' threshold = 11064.82, transformation = "box.cox", L= 50, MSE = TRUE, B = 50, 
+#' custom_indicator = list( my_max = function(y, threshold){max(y)},
+#' my_min = function(y, threshold){min(y)}), na.rm = TRUE, cpus = 1)
 #' 
 #' # Load shape file
-#' load(system.file("shapes/shape_austria_dis.RData", package="emdi"))
+#' load_shapeaustria()
 #' 
 #' # Create mapping table such that variables that indicate domains correspond
 #' # in population data and shape file
 #' mapping_table <- data.frame(unique(eusilcA_pop$district), 
 #' unique(shape_austria_dis$NAME_2))
-#' 
-#' # when rgeos is not available, polygon geometry 	computations in 
-#' # maptools depends on the package gpclib,
-#' # which has a restricted licence. It is disabled by default; 
-#' # to enable gpclib, type gpclibPermit()
-#' gpclibPermit() 
+#'
 #' # Create map plot for mean indicator - point and MSE estimates but no CV
 #' map_plot(object = emdi_model, MSE = TRUE, CV = FALSE, 
 #' map_obj = shape_austria_dis, indicator = c("Mean"), map_dom_id = "NAME_2", 
 #' map_tab = mapping_table)
 #' }
 #' @export
-#' @import maptools reshape2
+#' @import rgeos maptools reshape2 
 
 map_plot <- function(object,
                      indicator = "all",
@@ -74,11 +78,13 @@ map_plot <- function(object,
                      map_obj = NULL,
                      map_dom_id = NULL,
                      map_tab = NULL,
-                     col = c("green", "yellow", "red")){
+                     col = c("white", "red4"),
+                     scale_points = NULL,
+                     return_data = FALSE){
   if(is.null(map_obj))
   {
     message("No Map Object has been provided. An artificial polygone is used for
-            visualisation")
+            visualization")
     map_pseudo(object = object , indicator = indicator, panelplot = FALSE, MSE = MSE,
                CV = CV)
   }
@@ -88,9 +94,10 @@ map_plot <- function(object,
   }
   else {
     
-    if(length(col) != 3 || !is.vector(col))
+    if(length(col) != 2 || !is.vector(col))
     {
-      stop("col needs to be a vector of length 3 defining the starting, mid and upper color of the map-plot")
+      stop("col needs to be a vector of length 2 
+           defining the starting, mid and upper color of the map-plot")
     }
     
     plot_real(object,
@@ -100,7 +107,9 @@ map_plot <- function(object,
               map_obj = map_obj,
               map_dom_id = map_dom_id,
               map_tab = map_tab,
-              col = col
+              col = col,
+              scale_points = scale_points,
+              return_data = return_data
     )
   }
 }
@@ -135,7 +144,9 @@ plot_real <- function(object,
                       map_obj = NULL,
                       map_dom_id = NULL,
                       map_tab = NULL,
-                      col = col
+                      col = col,
+                      scale_points = NULL,
+                      return_data = FALSE
 ) {
   if(!is.null(map_obj) && is.null(map_dom_id)) {
     stop("No Domain ID for the map object is given")
@@ -181,45 +192,50 @@ plot_real <- function(object,
   map_obj@data[colnames(map_data)] <- map_data
 
   map_obj.fort <- fortify(map_obj, region = map_dom_id)
-  map_obj.fort <- merge(map_obj.fort, map_obj@data, by.x="id", by.y = map_dom_id)
-  lookup <- c( "Mean"           = TRUE,
-               "Head_Count"     = FALSE,
-               "Poverty_Gap"    = FALSE,
-               "Quintile_Share" = FALSE,
-               "Gini"           = FALSE,
-               "Quantile_10"    = TRUE,
-               "Quantile_25"    = TRUE,
-               "Median"         = TRUE,
-               "Quantile_75"    = TRUE,
-               "Quantile_90"    = TRUE
-  )
+  map_obj.fort <- merge(map_obj.fort, map_obj@data, by.x = "id", by.y = map_dom_id)
+  # lookup <- c( "Mean"           = TRUE,
+  #              "Head_Count"     = FALSE,
+  #              "Poverty_Gap"    = FALSE,
+  #              "Quintile_Share" = FALSE,
+  #              "Gini"           = FALSE,
+  #              "Quantile_10"    = TRUE,
+  #              "Quantile_25"    = TRUE,
+  #              "Median"         = TRUE,
+  #              "Quantile_75"    = TRUE,
+  #              "Quantile_90"    = TRUE
+  # )
   indicator <- colnames(map_data)
   for(ind in indicator)
   {
-    #col <- c("green", "yellow", "red")
-    if(ind %in% names(lookup) && lookup[ind])
-    {
-      col <- rev(col)
-    }
+    # if(ind %in% names(lookup) && lookup[ind])
+    # {
+    #   col <- rev(col)
+    # }
     map_obj.fort[ind][,1][!is.finite(map_obj.fort[ind][,1])] <- NA
+    scale_point <- get_scale_points(map_obj.fort[ind][,1], ind, scale_points)
+    
     print(ggplot(map_obj.fort, aes(long, lat, group = group, fill = map_obj.fort[ind][,1])) +
             geom_polygon(color="azure3") + coord_equal() + labs(x = "", y = "", fill = ind) +
             ggtitle(gsub(pattern = "_",replacement = " ",x = ind)) +
-            scale_fill_gradient2(low = col[1], mid=col[2], high = col[3],
-                                 midpoint = (min(map_obj.fort[ind][,1], na.rm = T) +
-                                 diff(range(c(map_obj.fort[ind][,1]), na.rm = T)) / 2),
-                                 limits = range(c(map_obj.fort[ind][,1]), na.rm = T)) +
+            scale_fill_gradient(low = col[1], high = col[2],limits = scale_point) +
+            # scale_fill_gradient2(low = col[1], mid=col[2], high = col[3],
+            #                      midpoint = scale_point[2],
+            #                      limits = scale_point[-2]) +
             theme(axis.ticks = element_blank(), axis.text = element_blank(), 
                   legend.title=element_blank())
     )
-    if(ind %in% names(lookup) && lookup[ind])
-    {
-      col <- rev(col)
-    }
+    # if(ind %in% names(lookup) && lookup[ind])
+    # {
+    #   col <- rev(col)
+    # }
     if(!ind == tail(indicator,1)){
       cat ("Press [enter] to continue")
       line <- readline()
     }
+  }
+  if(return_data)
+  {
+    return(map_obj.fort)
   }
 }
 
@@ -244,3 +260,39 @@ get_polygone <- function(values)
   combo <- merge(poly, values, by = "id", all = TRUE, sort = FALSE)
   melt(combo[order(combo$ordering),], id.vars = c("id","x","y","ordering"))
 }
+
+get_scale_points <- function(y, ind, scale_points){
+  result <- NULL
+  if(!is.null(scale_points)){
+    if(class(scale_points) == "numeric" && length(scale_points == 2)){
+      result <- scale_points
+    } else 
+    {
+      splt <- strsplit(ind, "_\\s*(?=[^_]+$)", perl = TRUE)[[1]]
+      indicator_name <- splt[1]
+      if(length(splt == 2)){
+        measure <- splt[2]
+      } else {
+        measure <- "ind"
+      }
+      if(indicator_name %in% names(scale_points)){
+        pointset <- scale_points[[indicator_name]]
+        try(result <- pointset[[measure]])
+      }
+      if(is.null(result) || length(result) != 3)
+      {
+        warnings("scale_points is of no apropriate form, default values will 
+                 be used. See the descriptions and examples for details")
+        result <- NULL
+      }
+    }
+  }
+  if(is.null(result)){
+    rg <- range(y, na.rm = T)
+    # midp <- mean(rg)
+    result <- rg #c(rg[1], midp, rg[2])
+  }
+  return(result)
+}
+
+

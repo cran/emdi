@@ -4,10 +4,11 @@
 \alias{ebp}
 \title{Empirical Best Prediction for disaggregated indicators}
 \usage{
-ebp(fixed, pop_data, pop_domains, smp_data, smp_domains, L, pov_line = NULL,
-  transformation = "box.cox", interval = c(-1, 2), MSE = FALSE,
-  B = NULL, parallel_mode = "local", cpus = 1, custom_indicator = NULL,
-  na.rm = FALSE)
+ebp(fixed, pop_data, pop_domains, smp_data, smp_domains, L = 50,
+  threshold = NULL, transformation = "box.cox", interval = c(-1, 2),
+  MSE = FALSE, B = 50, boot_type = "parametric",
+  parallel_mode = ifelse(grepl("windows", .Platform$OS.type, ), "socket",
+  "multicore"), cpus = 1, custom_indicator = NULL, na.rm = FALSE)
 }
 \arguments{
 \item{fixed}{a two-sided linear formula object describing the
@@ -33,23 +34,29 @@ that indicates domains in the sample data. The variable can be numeric or a
 factor but needs to be of the same class as the variable named in
 \code{pop_domains}.}
 
-\item{L}{a number determining the number of Monte-Carlo simulations.}
+\item{L}{a number determining the number of Monte-Carlo simulations.Defaults
+to 50.}
 
-\item{pov_line}{a number defining a poverty line. A poverty line is
-needed for calculation e.g. of head count ratios and poverty gaps. The 
-argument defaults to \code{NULL}. In this case the poverty line is set to 60\% 
-of the median of the variable that is selected as dependent variable similary 
-to the At-risk-of-poverty rate used in the EU (see also \cite{Social Protection 
-Committee 2001}). However, any desired poverty line can be chosen.}
+\item{threshold}{a number defining a threshold. Alternatively, a threshold may 
+be defined as a \code{function} of \code{y} returning a numeric value. Such a 
+function will be evaluated once for the point estimation and in each iteration 
+of the parametric bootstrap. A threshold is needed for calculation e.g. of 
+head count ratios and poverty gaps. The  argument defaults to \code{NULL}. 
+In this case the threshold is set to 60\% of the median of the variable that 
+is selected as dependent variable similary to the At-risk-of-poverty rate 
+used in the EU (see also \cite{Social Protection Committee 2001}). However, 
+any desired threshold can be chosen.}
 
 \item{transformation}{a character string. Three different transformation
 types for the dependent variable can be chosen (i) no transformation ("no");
 (ii) log transformation ("log"); (iii) Box-Cox transformation ("box.cox").
-Defaults to \code{NULL}.}
+Defaults to \code{"box.cox"}.}
 
 \item{interval}{a numeric vector containing a lower and upper limit
 determining an interval for the estimation of the optimal parameter. Defaults
-to c(-1,2).}
+to c(-1,2). If the convergence fails, it is often advisable to choose a smaller
+more suitable interval. For right skewed distributions the negative values may be
+excluded, also values larger than 1 are seldom observed.}
 
 \item{MSE}{if TRUE, MSE estimates using a parametric bootstrap approach
 are calculated (see also \cite{Gonzalez-Manteiga et al. (2008)}). Defaults
@@ -57,16 +64,22 @@ to \code{FALSE}.}
 
 \item{B}{a number determining the number of bootstrap populations in the
 parametric bootstrap approach (see also \cite{Gonzalez-Manteiga et al. (2008)})
-used in the MSE estimation. Defaults to \code{NULL}.}
+used in the MSE estimation. Defaults to 50.}
 
-\item{parallel_mode}{modus of parallelisation, defaults to local. For details see \code{\link[parallelMap]{parallelStart}}}
+\item{boot_type}{character to choose between different MSE estimation procedures,
+currently a \code{"parametric"} and a semi-parametric \code{"wild"} bootstrap 
+are possible}
+
+\item{parallel_mode}{modus of parallelization, defaults to an automatic selection 
+of a suitable mode, depending on the operating system, if the number of cpus is 
+chosen higher than 1. For details see \code{\link[parallelMap]{parallelStart}}}
 
 \item{cpus}{number determining the kernels that are used for the 
 parallelization. Defaults to 1. For details see \code{\link[parallelMap]{parallelStart}}}
 
 \item{custom_indicator}{a list of functions containing the indicators to be
-calculated additionaly, such functions must and must only depend on the
-population income vector \code{y} and the poverty line \code{pov_line}. 
+calculated additionaly. Such functions must and must only depend on the
+target variable \code{y} and the threshold \code{threshold}. 
 Defaults to \code{NULL}.}
 
 \item{na.rm}{if TRUE, observations with \code{NA} values are deleted from the 
@@ -99,26 +112,29 @@ The set of predefined indicators includes the mean, median, four further quantil
 and the quintile share ratio.
 }
 \examples{
+\dontrun{
 # Loading data - population and sample data
 data("eusilcA_pop")
-data("eusilcA_pop")
+data("eusilcA_smp")
 
 # Example with default setting but na.rm=TRUE
-set.seed(100); emdi_model <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
+emdi_model <- ebp(fixed = eqIncome ~ gender + eqsize + cash + self_empl + 
+unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + fam_allow + 
+house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
+pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district", 
+na.rm = TRUE)
+
+
+# Example with MSE, two additional indicators and function as threshold
+emdi_model <- ebp(fixed = eqIncome ~ gender + eqsize + cash + 
 self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
 fam_allow + house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
 pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district",
-L= 1, na.rm = TRUE)
-
-
-# Example with two additional indicators
-set.seed(100); emdi_model <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
-self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
-fam_allow + house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
-pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district",
-pov_line = 10722.66, transformation = "box.cox", L= 1, MSE = TRUE, B = 1,
-custom_indicator = list( my_max = function(y, pov_line){max(y)},
-my_min = function(y, pov_line){min(y)}), na.rm = TRUE, cpus = 1)
+threshold = function(y){0.6 * median(y)}, transformation = "log", 
+L= 50, MSE = TRUE, boot_type = "wild", B = 50, custom_indicator = 
+list( my_max = function(y, threshold){max(y)},
+my_min = function(y, threshold){min(y)}), na.rm = TRUE, cpus = 1)
+}
 }
 \references{
 Battese, G.E., Harter, R.M. and Fuller, W.A. (1988). An Error-Components
@@ -137,4 +153,3 @@ poverty and social exclusions, Technical Report, European Union.
 \code{\link{estimators.emdi}}, \code{\link{print.emdi}}, \code{\link{plot.emdi}},
 \code{\link{summary.emdi}}
 }
-

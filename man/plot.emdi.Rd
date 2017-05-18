@@ -8,8 +8,8 @@
   gg_theme = NULL, cooks = TRUE, range = NULL, ...)
 }
 \arguments{
-\item{x}{an object of type "emdi", representing point and MSE
-estimates.}
+\item{x}{an object of type "emdi", "model", representing point and, if chosen, 
+MSE estimates obtained by the EBP approach (see also \code{\link{ebp}}).}
 
 \item{label}{argument that enables to customize title and axis labels. There 
 are four options to label the diagsnostic plot: (i) original labels ("orig"), 
@@ -20,8 +20,8 @@ d_res, d_ran, cooks} and \code{box_cox} for the six different plots and these
 list elements need to have three elements each called \code{title, y_lab and 
 x_lab}. Only the labels for the plots that should be different to the original
 need to be specified. \cr
-list(
 \describe{
+\item{list(}{} 
 \item{qq_res =}{c(title="Error term", y_lab="Quantiles of pearson residuals", 
                 x_lab="Theoretical quantiles"),}
 \item{qq_ran =}{c(title="Random effect",
@@ -43,7 +43,7 @@ list(
 
 \item{color}{a character vector with two elements. The first element defines
 the color for the line in the QQ-plots, for the Cook's Distance plot and for
-the Box-Cox plot. The second element define the color for the densities.}
+the Box-Cox plot. The second element defines the color for the densities.}
 
 \item{gg_theme}{\code{\link[ggplot2]{theme}} list from package \pkg{ggplot2}.}
 
@@ -61,32 +61,33 @@ e.g. the selected \code{interval}. This means for the default seq(-1,2,by=0.05).
 \item{...}{optional arguments passed to generic function.}
 }
 \value{
-one line plot for the optimal parameter and two density plots
+Two Q-Q plots in one grid, two density plots, a Cook' distance plot 
+and a likelihood plot for the optimal parameter of the Box-Cox transformation 
 obtained by \code{\link{ggplot}}.
 }
 \description{
-Plots of the optimal parameter in Box-Cox transformations and density plots
-of residuals and random effects from the nested error regression model are
-obtained. The return depends on the transformation such that a plot for the
-optimal parameter is only returned in case a Box-Cox transformation is chosen.
-The range of the x-axis is optional but necessary to change if
-there are convergence problems. The density plots are obtained by
-\code{\link{ggplot}} using Pearson residuals and random effects. Function
-\code{generic_opt} is used for obtaining \code{\link{ggplot}} plots for the
-optimal parameter.
+Diagnostic plots of the underlying model in the EBP approach (see also 
+\code{\link{ebp}}) are obtained. These include Q-Q plots and density plots 
+of residuals and random effects from the nested error regression model, a 
+Cook's distance plot for detecting outliers and the log-likelihood of the 
+estimation of the optimal parameter in Box-Cox transformations. The return 
+depends on the transformation such that a plot for the optimal parameter is 
+only returned in case a Box-Cox transformation is chosen. The range of the 
+x-axis is optional but necessary to change if there are convergence problems. 
+All plots are obtained by \code{\link{ggplot}}.
 }
 \examples{
 \dontrun{
 # Loading data - population and sample data
 data("eusilcA_pop")
-data("eusilcA_pop")
+data("eusilcA_smp")
 
 # Example with default setting but na.rm=TRUE; with Box-Cox transformation
-set.seed(100); emdi_model <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
-self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
-fam_allow + house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
-pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district",
-L= 1, na.rm = TRUE)
+emdi_model <- ebp(fixed = eqIncome ~ gender + eqsize + cash + self_empl + 
+unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + fam_allow + 
+house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
+pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district", 
+na.rm = TRUE)
 
 # Creation of default diagnostic plots
 plot(emdi_model)
@@ -99,4 +100,3 @@ plot(emdi_model, label="no_title", color=c("red", "yellow"), cooks = FALSE)
 \seealso{
 \code{\link{emdiObject}}, \code{\link{ebp}}
 }
-

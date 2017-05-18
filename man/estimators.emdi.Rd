@@ -16,11 +16,11 @@ shall be returned: (i) all calculated indicators ("all");
 (ii) each indicator name: "Mean" "Quantile_10", "Quantile_25", "Median",
 "Quantile_75", "Quantile_90", "Head_Count", "Poverty_Gap", "Gini", 
 "Quintile_Share" or the function name/s of "custom_indicator/s"; 
-(ii) groups of indicators: "Quantiles", "Poverty", "Inequality" or "Custom". 
+(iii) groups of indicators: "Quantiles", "Poverty", "Inequality" or "Custom". 
 Defaults to "all". Note, additional custom indicators can be 
-defined as argument for model-based approaches (\code{link{ebp}}) and do not 
-appear in groups of indicators even though these might belong to one of the 
-groups.}
+defined as argument for model-based approaches (see also \code{\link{ebp}}) 
+and do not appear in groups of indicators even though these might belong to 
+one of the groups.}
 
 \item{MSE}{optional logical. If TRUE, MSE estimates for selected indicators
 per domain are added to the data frame of point estimates. Defaults to FALSE.}
@@ -46,18 +46,20 @@ the estimates shall be returned. The returned object is suitable for
 printing with the \code{print.estimators.emdi} method.
 }
 \examples{
+\dontrun{
 # Loading data - population and sample data
 data("eusilcA_pop")
-data("eusilcA_pop")
+data("eusilcA_smp")
 
 # generate emdi object with additional indicators; here via function ebp()
-set.seed(100); emdi_model <- ebp( fixed = eqIncome ~ gender + eqsize + cash + 
+emdi_model <- ebp(fixed = eqIncome ~ gender + eqsize + cash + 
 self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
 fam_allow + house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
 pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district",
-pov_line = 10722.66, transformation = "box.cox", L= 1, MSE = TRUE, B = 1,
-custom_indicator = list( my_max = function(y, pov_line){max(y)},
-my_min = function(y, pov_line){min(y)}), na.rm = TRUE, cpus = 1)
+threshold = 11064.82, transformation = "box.cox", 
+L= 50, MSE = TRUE, B = 50, custom_indicator = 
+list( my_max = function(y, threshold){max(y)},
+my_min = function(y, threshold){min(y)}), na.rm = TRUE, cpus = 1)
 
 # choose Gini coefficient and MSE and CV
 estimators(emdi_model, indicator = "Gini", MSE = TRUE, CV = TRUE)
@@ -65,7 +67,7 @@ estimators(emdi_model, indicator = "Gini", MSE = TRUE, CV = TRUE)
 # choose custom indicators without MSE and CV
 estimators(emdi_model, indicator = "Custom")
 }
-\seealso{
-\code{\link{emdiObject}}, \code{\link{ebp}}
 }
-
+\seealso{
+\code{\link{emdiObject}}, \code{\link{direct}}, \code{\link{ebp}}
+}
