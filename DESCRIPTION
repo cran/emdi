@@ -1,7 +1,7 @@
 Package: emdi
 Title: Estimating and Mapping Disaggregated Indicators
-Version: 1.1.0
-Date: 2017-05-17
+Version: 1.1.1
+Date: 2017-07-06
 Authors@R: c(person("Ann-Kristin", "Kreutzmann", role="aut", email="ann-kristin.kreutzmann@fu-berlin.de"),
     person("Soeren", "Pannier", role=c("aut", "cre"), email="soeren.pannier@fu-berlin.de"),
     person("Natalia", "Rojas-Perilla", role="aut", email = "natalia.rojas@fu-berlin.de"),
@@ -22,11 +22,11 @@ LazyData: true
 RoxygenNote: 6.0.1
 Imports: nlme, FNN, moments, ggplot2, MuMIn, gridExtra, openxlsx,
         ggmap, reshape2, graphics, stats, parallelMap, HLMdiag,
-        parallel, simFrame, boot, Hmisc, rgeos, maptools, MASS
+        parallel, simFrame, boot, rgeos, maptools, MASS
 Suggests: testthat, R.rsp, laeken
 VignetteBuilder: R.rsp
 NeedsCompilation: no
-Packaged: 2017-05-18 05:47:39 UTC; spannier
+Packaged: 2017-07-06 11:31:06 UTC; spannier
 Author: Ann-Kristin Kreutzmann [aut],
   Soeren Pannier [aut, cre],
   Natalia Rojas-Perilla [aut],
@@ -35,4 +35,4 @@ Author: Ann-Kristin Kreutzmann [aut],
   Nikos Tzavidis [aut]
 Maintainer: Soeren Pannier <soeren.pannier@fu-berlin.de>
 Repository: CRAN
-Date/Publication: 2017-05-18 07:19:28 UTC
+Date/Publication: 2017-07-06 14:41:03 UTC
