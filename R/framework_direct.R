@@ -39,7 +39,7 @@ framework_dir <- function(y, smp_data, smp_domains, weights,
 
   byDomain <- !is.null(smp_domains)
   if (byDomain) {
-    smp_domains_vec <- as.factor(smp_data[, smp_domains])
+    smp_domains_vec <- as.factor(as.character(smp_data[, smp_domains]))
     smp_domains_vec <- droplevels(smp_domains_vec)
     rs <- levels(smp_domains_vec)
     # Number of domains in the sample
@@ -53,16 +53,18 @@ framework_dir <- function(y, smp_data, smp_domains, weights,
 
   
   
-  if(is.null(threshold)){
-    if(is.null(weights)){
+  if (is.null(threshold)) {
+    if (is.null(weights)) {
       threshold <- 0.6 * median(y_vec)
-    } else if (!is.null(weights)){
+      cat("The threshold for the HCR and the PG is automatically set to 60% of 
+        the median of the dependent variable and equals",threshold, "\n")
+    } else if (!is.null(weights)) {
       threshold <- 0.6 * wtd.quantile(x = y_vec, 
                                      weights = weights_vec,
                                      probs = .5)
+      cat("The threshold for the HCR and the PG is automatically set to 60% of 
+        the weighted median of the dependent variable and equals",threshold, "\n")
     }
-    cat("The threshold for the HCR and the PG is automatically set to 60% of 
-        the median of the dependent variable and equals",threshold, "\n")
   }
 
   indicator_list <- getIndicatorList_fixed()
@@ -186,11 +188,11 @@ wtd.quantile <- function(x, weights = NULL, probs = NULL) {
   x <- x[order]
   weights <- weights[order]
   if(is.null(weights)){
-    rw <- (1:n)/n
+    rw <- seq_len(n)/n
   } else {
     rw <- cumsum(weights)/sum(weights)
   }
-  q <- sapply(probs, function(p) {
+  q <- vapply(probs, function(p) {
     if (p == 0) 
       return(x[1])
     else if (p == 1) 
@@ -199,6 +201,6 @@ wtd.quantile <- function(x, weights = NULL, probs = NULL) {
     if (rw[select] == p) 
       mean(x[select:(select + 1)])
     else x[select]
-  })
+  }, numeric(1))
   return(unname(q))
 }

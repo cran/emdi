@@ -1,15 +1,18 @@
-#' Exports an emdiObject to an excel file
+#' Exports an emdiObject to an excel file or OpenDocument Spreadsheet 
 #'
 #' Function \code{write.excel} enables the user to export point and MSE 
-#' estimates as well as diagnostics from \code{summary.emdi} to an excel file. 
-#' The user can choose if the results should be reported in one or several excel 
+#' estimates as well as diagnostics from \code{summary.emdi} to an Excel file. 
+#' The user can choose if the results should be reported in one or several Excel 
 #' sheets. Furthermore, a selection of indicators can be specified. 
+#' Respectively the function \code{write.ods} enables the export to OpenDocument
+#' Spreadsheets. Note that while \code{write.exel} will create a single document 
+#' \code{write.ods} will create a group of files. 
 #' @param object an object of type "emdi", representing point and
 #' MSE estimates.
-#' @param file path and filename of the spreadsheet to create. It should end on .xlsx.
+#' @param file path and filename of the spreadsheet to create. It should end on .xlsx or .ods respectively.
 #' @param indicator optional character vector that selects which indicators
 #' shall be returned: (i) all calculated indicators ("all");
-#' (ii) each indicator name: "Mean" "Quantile_10", "Quantile_25", "Median",
+#' (ii) each indicator name: "Mean", "Quantile_10", "Quantile_25", "Median",
 #' "Quantile_75", "Quantile_90", "Head_Count", 
 #' "Poverty_Gap", "Gini", "Quintile_Share" or the function name/s of 
 #' "custom_indicator/s"; (iii) groups of indicators: "Quantiles", "Poverty" or 
@@ -22,19 +25,22 @@
 #' @param CV logical. If \code{TRUE}, the CV of the emdiObject is exported. 
 #' Defaults to \code{FALSE}.
 #' @param split logical. If \code{TRUE}, point estimates, MSE and CV are written 
-#' to different sheets in the excel file. Defaults to \code{FALSE}.
-#' @return An excel file is created in your working directory, or at the given
-#' path.
-#' @details This function creates an excel file via the package
-#' \code{\link{openxlsx}}. The \code{\link{openxlsx}} package requires a zip 
-#' application to be available to R. If this is not the case the authors of 
-#' \code{\link{openxlsx}} suggest the first of the two following ways. 
+#' to different sheets in the Excel file. In \code{write.ods} \code{TRUE} will
+#' result in differnt files for point estimates and their precisions.
+#' Defaults to \code{FALSE}.
+#' @return An Excel file is created in your working directory, or at the given
+#' path. Alternatively multiple ODS files are created at the given path.
+#' @details These functions create an Excel file via the package
+#' \pkg{\link{openxlsx}} respectively ODS files via the package 
+#' \pkg{readODS}.
+#' Both packages requires a zip application to be available to \R. If this is not 
+#' the case the authors of \pkg{\link{openxlsx}} suggest the first of the two following ways. 
 #' \itemize{
 #' \item Install Rtools from: http://cran.r-project.org/bin/windows/Rtools/ and
 #' modify the system PATH during installation.
 #' \item If Rtools is installed, but no system path variable is set. One can 
-#' set such a variable temporarily to R by a command like: 
-#' \code{Sys.setenv("R_ZIPCMD" = "PathToTheRToolsFolder/bin/zip.exe")}
+#' set such a variable temporarily to \R by a command like: 
+#' \code{Sys.setenv("R_ZIPCMD" = "PathToTheRToolsFolder/bin/zip.exe")}.
 #' }
 #' To check if a zip application is available they recommend the command 
 #' \code{shell("zip")}.
@@ -55,17 +61,24 @@
 #' my_min = function(y, threshold){min(y)}), na.rm = TRUE, cpus = 1)
 #' 
 #' # Example 1: Export estimates for all indicators and uncertainty measures and 
-#' # diagnostics to excel
+#' # diagnostics to Excel
 #' write.excel(emdi_model, file = "excel_output_all.xlsx", indicator = "all", 
 #' MSE = TRUE, CV = TRUE)
 #' 
-#' # Example 2: Single excel sheets for point, MSE and CV estimates
+#' # Example 2: Single Excel sheets for point, MSE and CV estimates
 #' write.excel(emdi_model, file = "excel_output_all_split.xlsx", indicator = "all", 
 #' MSE = TRUE, CV = TRUE, split = TRUE)
+#' 
+#' # Example 3: Same as example 1 but for an ODS output
+#' write.ods(emdi_model, file = "ods_output_all.ods", indicator = "all", 
+#' MSE = TRUE, CV = TRUE)
 #' }
+#' 
 #' @export
-#' @import openxlsx
-#'
+#' @importFrom openxlsx createWorkbook createStyle freezePane
+#' @importFrom openxlsx addWorksheet writeData saveWorkbook
+#' @importFrom openxlsx addStyle writeDataTable setColWidths
+#' 
 write.excel <- function(object,
                         file      ="excel_output.xlsx",
                         indicator = "all",
@@ -331,7 +344,7 @@ add_pointests <- function(object, indicator, wb, headlines_cs) {
 
   setColWidths(wb     = wb,
                sheet  = "Point Estimators",
-               cols   = 1:ncol(data),
+               cols   = seq_len(ncol(data)),
                widths = "auto"
                )
 
@@ -361,7 +374,7 @@ add_precisions <- function(object, indicator, MSE, wb, headlines_cs, CV) {
                    )
     setColWidths(wb     = wb,
                  sheet  = "MSE Estimators",
-                 cols   = 1:ncol(precisions$ind),
+                 cols   = seq_len(ncol(precisions$ind)),
                  widths = "auto"
                  )
     freezePane(wb       = wb,
@@ -386,7 +399,7 @@ add_precisions <- function(object, indicator, MSE, wb, headlines_cs, CV) {
 
     setColWidths(wb     = wb,
                  sheet  = "CV Estimators",
-                 cols   = 1:ncol(precisions$ind_cv),
+                 cols   = seq_len(ncol(precisions$ind_cv)),
                  widths = "auto"
                  )
 
@@ -416,7 +429,7 @@ add_estims <- function(object, indicator, wb, headlines_cs, MSE, CV) {
 
   setColWidths(wb     = wb,
                sheet  = "Estimates",
-               cols   = 1:ncol(data),
+               cols   = seq_len(ncol(data)),
                widths = "auto"
                )
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.emdi.R
 \name{summary.emdi}
 \alias{summary.emdi}
-\title{Summarize an emdiObject}
+\title{Summarizes an emdiObject}
 \usage{
 \method{summary}{emdi}(object, ...)
 }
@@ -11,7 +11,7 @@
 estimates. Objects differ depending on the estimation method: direct 
 vs. model-based.}
 
-\item{...}{additional arguments that are not used in this method}
+\item{...}{additional arguments that are not used in this method.}
 }
 \value{
 an object of type "summary.emdi" with following
@@ -42,8 +42,8 @@ sizes across domains of sample and population data, respectively.}
 \item{icc}{if model-based estimation, the value of the intraclass coefficient.}
 \item{coeff_determ}{if model-based estimation, a data frame with colums 
                     Marginal_R2 and Conditional_R2 representing two R2 measures
-                    for linear mixed models from the \pkg{MuMin} package
-                    obtained by function \code{\link{r.squaredGLMM}}.}                  
+                    for linear mixed models from the \pkg{MuMIn} package
+                    obtained by function \code{\link[MuMIn]{r.squaredGLMM}}.}                  
 \item{call}{a list containing an image of the function call that produced the
             object.}
 }
@@ -73,6 +73,6 @@ summary(emdi_model)
 }
 \seealso{
 \code{\link{emdiObject}}, \code{\link{direct}}, \code{\link{ebp}}, 
-\code{\link{r.squaredGLMM}}, \code{\link{skewness}}, \code{\link{kurtosis}},
-\code{\link{shapiro.test}}
+\code{\link[MuMIn]{r.squaredGLMM}}, \code{\link[moments]{skewness}}, 
+\code{\link[moments]{kurtosis}}, \code{\link[stats]{shapiro.test}}
 }

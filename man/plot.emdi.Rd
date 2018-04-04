@@ -12,7 +12,7 @@
 MSE estimates obtained by the EBP approach (see also \code{\link{ebp}}).}
 
 \item{label}{argument that enables to customize title and axis labels. There 
-are four options to label the diagsnostic plot: (i) original labels ("orig"), 
+are four options to label the diagnostic plot: (i) original labels ("orig"), 
 (ii) axis lables but no title ("no_title"), (iii) neither axis 
 labels nor title ("blank"), (iv) individual labels by a list that needs to 
 have below structure. Six elements can be defined called \code{qq_res, qq_ran, 
@@ -45,26 +45,28 @@ need to be specified. \cr
 the color for the line in the QQ-plots, for the Cook's Distance plot and for
 the Box-Cox plot. The second element defines the color for the densities.}
 
-\item{gg_theme}{\code{\link[ggplot2]{theme}} list from package \pkg{ggplot2}.}
+\item{gg_theme}{\code{\link[ggplot2]{theme}} list from package \pkg{ggplot2}.
+For using this argument, package \pkg{ggplot2} must be loaded via 
+\code{library(ggplot2)}. See also Example 4.}
 
 \item{cooks}{if \code{TRUE}, a Cook's distance plot is returned. The used 
-method \code{\link[HLMdiag]{cooks.distance.lme}} struggles when data sets 
-get large. In these cases, \code{cooks} should be set to \code{FALSE}. It 
-defaults to \code{TRUE}.}
+method \code{mdffits.default} from the package \pkg{HLMdiag}
+struggles when data sets get large. In these cases, \code{cooks} should be 
+set to \code{FALSE}. It defaults to \code{TRUE}.}
 
 \item{range}{optional sequence determining the range of the x-axis for plots
-of the optimal parameter that defaults to \code{NULL}. In that case a range 
-of the optimal parameter +2/-1 is used for the plots of the optimal parameter. 
-This leads in some cases to convergence problems such that is should be 
-changed to e.g. the selected \code{interval}. This means for the default 
-interval \code{seq(-1, 2, by = 0.05)}.}
+of the optimal transformation parameter that defaults to \code{NULL}. In that 
+case a range of the optimal parameter +2/-1 is used for the plots of the 
+optimal parameter. This leads in some cases to convergence problems such that 
+it should be changed to e.g. the selected \code{interval}. This means for the 
+default interval \code{seq(-1, 2, by = 0.05)}.}
 
 \item{...}{optional arguments passed to generic function.}
 }
 \value{
 Two Q-Q plots in one grid, two density plots, a Cook' distance plot 
 and a likelihood plot for the optimal parameter of the Box-Cox transformation 
-obtained by \code{\link{ggplot}}.
+obtained by \code{\link[ggplot2]{ggplot}}.
 }
 \description{
 Diagnostic plots of the underlying model in the EBP approach (see also 
@@ -75,7 +77,7 @@ estimation of the optimal parameter in Box-Cox transformations. The return
 depends on the transformation such that a plot for the optimal parameter is 
 only returned in case a Box-Cox transformation is chosen. The range of the 
 x-axis is optional but necessary to change if there are convergence problems. 
-All plots are obtained by \code{\link{ggplot}}.
+All plots are obtained by \code{\link[ggplot2]{ggplot}}.
 }
 \examples{
 \dontrun{
@@ -102,6 +104,12 @@ plot(emdi_model, label = "no_title", color = c("red", "yellow"), cooks = FALSE)
 plot(emdi_model, label = list(qq_res = c(title = "Pearson resid.", 
 y_lab = "Quant.", x_lab = "Theo. Quant.")), color = c("red", "yellow"), 
 cooks = FALSE)
+
+# Example 4: Usage of theme from ggplot2 within plot.emdi
+library(ggplot2)
+plot(emdi_model, gg_theme = theme(panel.background = element_rect(fill = "white", 
+colour = "white"), plot.title = element_text(face = "bold"),
+title = element_text(color = "navy")))
 
 }
 }

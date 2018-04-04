@@ -94,16 +94,17 @@ direct_variance <- function(direct_estimator,
                      aux = X_calib, 
                      totals = totals, 
                      rs = rs,
-                     envir = envir)
+                     envir = envir,
+                     indicator_name = indicator_name)
                      #, ...)
 
   # if variance is calculated by domain
   if (byDomain) {
-    var <- apply(b$t, 2, var)
+    var <- apply(b$t, 2, var, na.rm = TRUE)
     varByDomain <- data.frame(Domain = rs, var = var[-1])
     var <- var[1]
   } else {
-    var <- var(b$t[, 1])
+    var <- var(b$t[, 1], na.rm = TRUE)
   }
   
   # preparation of return
@@ -117,23 +118,25 @@ direct_variance <- function(direct_estimator,
 }
 
 
-getFun2 <- function(byDomain, direct_estimator, envir){
+getFun2 <- function(byDomain, direct_estimator, envir, indicator_name){
   if (byDomain) {
-    function(x, threshold, rs, envir) {
+    function(x, threshold, rs, envir, indicator_name) {
       if (inherits(threshold, "function")) {
         threshold <- threshold(x$y, x$weight)
       }
       value <- direct_estimator(x$y, x$weight, threshold)
-      valueByDomain <- sapply(rs, function(r, x, t, evir) {
+      valueByDomain <- vapply(rs, function(r, x, t, evir) {
         i <- x$Domain == r
         if (!sum(i) > 0)
         {
-          assign("warnlist", c(get("warnlist", envir = envir), as.character(r)), envir = envir)
+          assign("warnlist", c(get("warnlist", envir = envir), 
+                               paste0(as.character(r), ":_:",indicator_name)), 
+                 envir = envir)
           NA
         } else {
           direct_estimator(x$y[i], x$weight[i],  threshold)
         }
-      }, x = x)
+      }, numeric(1), x = x)
       c(value, valueByDomain)
     }
   }
@@ -148,35 +151,37 @@ getFun2 <- function(byDomain, direct_estimator, envir){
 }
 
 # Function in order to select between naive and calibrate bootstrap
-getBootFun2  <- function(calibrate, fun, envir) {
+getBootFun2  <- function(calibrate, fun, envir, indicator_name) {
   if (calibrate) {
-    function(x, i, threshold, aux, totals, rs, envir, ...) {
+    function(x, i, threshold, aux, totals, rs, envir, indicator_name,  ...) {
       x <- x[i, , drop = FALSE]
       aux <- aux[i, , drop = FALSE]
       g <- calibWeights(aux, x$weight, totals, ...)
       x$weight <- g * x$weight
-      fun(x, threshold, rs, envir)
+      fun(x, threshold, rs, envir, indicator_name)
     }
   } else {
-    function(x, i, threshold, aux, totals, rs, envir, ...) {
+    function(x, i, threshold, aux, totals, rs, envir, indicator_name, ...) {
       x <- x[i, , drop = FALSE]
-      fun(x, threshold, rs, envir)
+      fun(x, threshold, rs, envir, indicator_name)
     }
   }
 }
 
 # Wrapper function for bootstrap function (for possible extensions)
-clusterBoot2 <- function(data, statistic, ..., domain, threshold, cluster = NULL, envir){
+clusterBoot2 <- function(data, statistic, ..., domain, threshold, cluster = NULL, 
+                         envir, indicator_name){
   if (is.null(cluster)) {
-    boot(data, statistic,  threshold = threshold, ..., domain = domain, envir = envir)
+    boot(data, statistic,  threshold = threshold, ..., domain = domain, 
+         envir = envir, indicator_name = indicator_name)
   } else {
     fun <- function(cluster, i, ..., .data, .statistic) {
-      i <- do.call(c, split(1:nrow(.data), .data$cluster)[i])
+      i <- do.call(c, split(seq_len(nrow(.data)), .data$cluster)[i])
       .statistic(.data, i, ...)
     }
     keep <- !duplicated(cluster)
     boot(cluster[keep], fun, ..., domain = domain[keep], threshold = threshold,
-         .data = data, .statistic = statistic, envir = envir)
+         .data = data, .statistic = statistic, envir = envir, indicator_name)
   }
 }
 
@@ -236,8 +241,8 @@ calibWeights <- function(X_calib,
       while (!any(is.na(g)) && tolNotReached(X_calib, w, totals, 
                                              tol) && i <= maxit) {
         phi <- t(X_calib) %*% w - totals
-        T <- t(X_calib * w)
-        dphi <- T %*% X_calib
+        Tmat <- t(X_calib * w)
+        dphi <- Tmat %*% X_calib
         lambda <- lambda - ginv(dphi, tol = eps) %*% 
           phi
         g <- exp(as.vector(X_calib %*% lambda) * q)
@@ -252,7 +257,7 @@ calibWeights <- function(X_calib,
     else {
       if (length(bounds) < 2) 
         stop("'bounds' must be a vector of length 2")
-      else bounds <- bounds[1:2]
+      else bounds <- bounds[seq_len(2)]
       if (bounds[1] >= 1) 
         stop("the lower bound must be smaller than 1")
       if (bounds[2] <= 1) 
@@ -269,7 +274,7 @@ calibWeights <- function(X_calib,
       totals1 <- totals
       q1 <- q
       g1 <- g
-      indices <- 1:n
+      indices <- seq_len(n)
       anyOutOfBounds <- function(g, bounds) {
         any(g < bounds[1]) || any(g > bounds[2])
       }
@@ -297,8 +302,8 @@ calibWeights <- function(X_calib,
         }
         w1 <- g1 * d1
         phi <- t(X1) %*% w1 - totals1
-        T <- t(X1 * w1)
-        dphi <- T %*% X1
+        Tmat <- t(X1 * w1)
+        dphi <- Tmat %*% X1
         lambda <- lambda - ginv(dphi, tol = eps) %*% 
           phi
         u <- exp(A * as.vector(X1 %*% lambda) * q1)

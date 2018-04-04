@@ -45,7 +45,7 @@ generic_opt <- function(lambda,
 
   #Definition of optimization function for finding the optimal lambda
   #Preperation to easily implement further methods here
-  optimization <- if(T) {
+  optimization <- if (TRUE) {
         reml(fixed          = fixed,
              smp_data       = smp_data,
              smp_domains    = smp_domains,
@@ -77,10 +77,11 @@ reml <- function(fixed          = fixed,
                         data      = sd_transformed_data,
                         random    = as.formula(paste0("~ 1 | as.factor(", smp_domains, ")")),
                         method    = "REML",
-                        keep.data = FALSE), silent=TRUE)
-  if(is.null(model_REML)){
-    stop("For some lambda in the interval, the likelihood does not converge.
-         Choose another interval. See also help(ebp).")
+                        keep.data = FALSE), silent = TRUE)
+  if(is.null(model_REML)) {
+    stop("The likelihood does not converge. One reason could be that the 
+          interval for the estimation of an optimal transformation parameter is 
+          not appropriate. Try another interval. See also help(ebp).")
   } else {
     model_REML <- model_REML
   }

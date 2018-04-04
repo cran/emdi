@@ -10,14 +10,14 @@ parametric_bootstrap <- function(framework,
                                  point_estim,
                                  fixed,
                                  transformation,
-                                 interval=c(-1,2),
+                                 interval = c(-1,2),
                                  L,
                                  B,
                                  boot_type,
                                  parallel_mode,
                                  cpus) {
   cat('\r', "Bootstrap started                                                                        ")
-  if(boot_type == "wild"){
+  if (boot_type == "wild") {
     res_s <- residuals(point_estim$model)
     fitted_s <- fitted(point_estim$model, level = 1)
   } else {
@@ -29,35 +29,36 @@ parametric_bootstrap <- function(framework,
   if (cpus > 1) {
     
 
-    cpus <- min(cpus, detectCores())
-    
-    parallelStart(mode = parallel_mode, cpus = cpus, show.info = FALSE)
+    cpus <- min(cpus, parallel::detectCores())
+    parallelMap::parallelStart(mode = parallel_mode, 
+                               cpus = cpus, show.info = FALSE)
 
     if (parallel_mode == "socket") {
-      clusterSetRNGStream()
+      parallel::clusterSetRNGStream()
     } 
-    parallelLibrary("nlme")
-    mses <- simplify2array(parallelLapply(xs              = 1:B, 
-                                           fun             = mse_estim_wrapper,
-                                           B               = B,
-                                           framework       = framework,
-                                           lambda          = point_estim$optimal_lambda,
-                                           shift           = point_estim$shift_par,
-                                           model_par       = point_estim$model_par,
-                                           gen_model       = point_estim$gen_model,
-                                           fixed           = fixed,
-                                           transformation  = transformation,
-                                           interval        = interval,
-                                           L               = L,
-                                           res_s           = res_s,
-                                           fitted_s        = fitted_s,
-                                           start_time      = start_time,
-                                           boot_type       = boot_type
+    parallelMap::parallelLibrary("nlme")
+    mses <- simplify2array(parallelMap::parallelLapply(
+                                   xs              = seq_len(B), 
+                                   fun             = mse_estim_wrapper,
+                                   B               = B,
+                                   framework       = framework,
+                                   lambda          = point_estim$optimal_lambda,
+                                   shift           = point_estim$shift_par,
+                                   model_par       = point_estim$model_par,
+                                   gen_model       = point_estim$gen_model,
+                                   fixed           = fixed,
+                                   transformation  = transformation,
+                                   interval        = interval,
+                                   L               = L,
+                                   res_s           = res_s,
+                                   fitted_s        = fitted_s,
+                                   start_time      = start_time,
+                                   boot_type       = boot_type
                   )
             )
-    parallelStop()
+    parallelMap::parallelStop()
   } else{
-      mses <- simplify2array(lapply(        X               = 1:B,  
+      mses <- simplify2array(lapply(        X               = seq_len(B),  
                                             FUN             = mse_estim_wrapper,
                                             B               = B,
                                             framework       = framework,
@@ -77,8 +78,8 @@ parametric_bootstrap <- function(framework,
       )
   }
   
-  cat('\r', "Bootstrap completed                                                                      ")
-  if(.Platform$OS.type == "windows"){
+  cat('\r', "Bootstrap completed", "\n")
+  if (.Platform$OS.type == "windows") {
     flush.console()
   }
   mses <- apply(mses, c(1,2), mean)
@@ -116,7 +117,7 @@ mse_estim <- function(framework,
   # variable that passes the random effect to generating bootstrap populations
   # in bootstrap_par.
   
-  if (boot_type == "wild"){
+  if (boot_type == "wild") {
     superpop <- superpopulation_wild(framework      = framework,
                                       model_par      = model_par,
                                       gen_model      = gen_model,
@@ -127,7 +128,7 @@ mse_estim <- function(framework,
                                       fitted_s       = fitted_s
     )
   }
-  else{
+  else {
     superpop <- superpopulation(framework      = framework,
                                 model_par      = model_par,
                                 gen_model      = gen_model,
@@ -138,7 +139,7 @@ mse_estim <- function(framework,
   }
   pop_income_vector <- superpop$pop_income_vector
   
-  if (inherits(framework$threshold, "function")){
+  if (inherits(framework$threshold, "function")) {
     framework$threshold <- 
       framework$threshold(y = pop_income_vector)
   }
@@ -215,11 +216,13 @@ superpopulation_wild <-  function(framework, model_par, gen_model, lambda, shift
   # income without individual errors
   Y_pop_b <- gen_model$mu_fixed + vu_pop
   
-  indexer <- sapply(Y_pop_b, function(x) {which.min(abs(x - fitted_s))})
+  indexer <- vapply(Y_pop_b, 
+                    function(x) {which.min(abs(x - fitted_s))}, 
+                    FUN.VALUE = integer(1))
   
   # superpopulation individual errors
   eps <- res_s[indexer]
-  wu <- sample(c(-1,1),size = length(eps), replace = T)
+  wu <- sample(c(-1,1),size = length(eps), replace = TRUE)
   eps <- abs(eps) * wu
   
   #  superpopulation income vector
@@ -244,7 +247,7 @@ superpopulation <-  function(framework, model_par, gen_model, lambda, shift,
                                     sqrt(model_par$sigmae2est))
   eps[!framework$obs_dom] <- rnorm(sum(!framework$obs_dom),
                                    0,
-                                   sqrt(model_par$sigmae2est+model_par$sigmau2est))
+                                   sqrt(model_par$sigmae2est + model_par$sigmau2est))
   # superpopulation random effect
   vu_tmp <- rnorm(framework$N_dom_pop, 0, sqrt(model_par$sigmau2est))
   vu_pop <- rep(vu_tmp, framework$n_pop)
@@ -257,7 +260,7 @@ superpopulation <-  function(framework, model_par, gen_model, lambda, shift,
   )
   Y_pop_b[!is.finite(Y_pop_b)] <- 0
   
-  return(list(pop_income_vector=Y_pop_b, vu_tmp=vu_tmp))
+  return(list(pop_income_vector = Y_pop_b, vu_tmp = vu_tmp))
 }
 
 # Bootstrap function -----------------------------------------------------------
@@ -294,7 +297,8 @@ bootstrap_par <- function(fixed,
   return(bootstrap_sample = bootstrap_smp)
 }
 
-bootstrap_par_wild <- function( fixed,
+bootstrap_par_wild <- function( 
+                                fixed,
                                 transformation,
                                 framework,
                                 model_par,
@@ -306,7 +310,7 @@ bootstrap_par_wild <- function( fixed,
   # rescaling sample individual error term
   res_s <- sqrt(model_par$sigmae2est) * (res_s - mean(res_s))/sd(res_s)
   # Bootstrap sample individual error term
-  ws <- sample(c(-1,1),size = length(res_s), replace = T)
+  ws <- sample(c(-1,1),size = length(res_s), replace = TRUE)
   eps <- abs(res_s) * ws
   
   # Bootstrap sample random effect
@@ -366,10 +370,10 @@ mse_estim_wrapper <-  function(i,
                    boot_type       = boot_type
                    )
 
-  if (i%%10 == 0) {
+  if (i %% 10 == 0) {
     if (i != B) {
       delta <- difftime(Sys.time(), start_time, units = "secs")
-      remaining <- (delta/i)*(B-i)
+      remaining <- (delta/i)*(B - i)
       remaining <- unclass(remaining)
       remaining <- sprintf("%02d:%02d:%02d:%02d",
                            remaining %/% 86400,  # days
@@ -378,8 +382,8 @@ mse_estim_wrapper <-  function(i,
                            remaining %% 60 %/% 1) # seconds)
 
       cat('\r', i, " of ", B, " Bootstrap iterations completed \t Approximately ",
-          remaining, " remaining")
-      if(.Platform$OS.type == "windows") flush.console()
+          remaining, " remaining \n")
+      if (.Platform$OS.type == "windows") flush.console()
     }
   }
   return(tmp)

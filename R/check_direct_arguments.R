@@ -74,6 +74,14 @@ direct_check <- function(y,
           it is NULL 60% of the median of the target variable is selected as 
           threshold. See also help(direct).')
   }
+  
+  if (inherits(threshold, "function") && 
+      (!is.numeric(threshold(smp_data[[y]], smp_data[[weights]])) 
+       || length(threshold(smp_data[[y]], smp_data[[weights]])) != 1)) {
+    stop("The threshold function must return a single numeric value when evaluated
+         with the dependent variable and the weights, if present.")
+  }
+  
   if (!is.logical(var) || length(var) != 1) {
     stop("Var must be a logical value. Set Var to TRUE or FALSE. See also
          help(direct).")
@@ -114,7 +122,7 @@ direct_check <- function(y,
     }
     
     N_custom <- length(custom_indicator)
-    for (i in 1:N_custom) {
+    for (i in seq_len(N_custom)) {
       if (!inherits(custom_indicator[[i]], "function")) {
         stop("The elements of the list need to be functions. These Functions 
              for custom indicators need to have exactly the following 
@@ -128,7 +136,7 @@ direct_check <- function(y,
              three arguments: y, weights threshold; even though weights might 
              not be needed and a threshold might not be 
              included in the indicator. For help see Example 3 in help(direct).")
+        }
       }
-      }
-      }
+    }
 }

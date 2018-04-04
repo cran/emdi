@@ -34,8 +34,10 @@ that indicates domains in the sample data. The variable can be numeric or a
 factor but needs to be of the same class as the variable named in
 \code{pop_domains}.}
 
-\item{L}{a number determining the number of Monte-Carlo simulations. Defaults
-to 50.}
+\item{L}{a number determining the number of Monte-Carlo simulations that 
+must be at least 1. Defaults to 50. For practical applications, values 
+larger than 200 are recommended (see also 
+\cite{Molina, I. and Rao, J.N.K. (2010)}).}
 
 \item{threshold}{a number defining a threshold. Alternatively, a threshold may 
 be defined as a \code{function} of \code{y} returning a numeric value. Such a 
@@ -43,7 +45,7 @@ function will be evaluated once for the point estimation and in each iteration
 of the parametric bootstrap. A threshold is needed for calculation e.g. of 
 head count ratios and poverty gaps. The  argument defaults to \code{NULL}. 
 In this case the threshold is set to 60\% of the median of the variable that 
-is selected as dependent variable similary to the At-risk-of-poverty rate 
+is selected as dependent variable similary to the at-risk-of-poverty rate 
 used in the EU (see also \cite{Social Protection Committee 2001}). However, 
 any desired threshold can be chosen.}
 
@@ -53,10 +55,12 @@ types for the dependent variable can be chosen (i) no transformation ("no");
 Defaults to \code{"box.cox"}.}
 
 \item{interval}{a numeric vector containing a lower and upper limit
-determining an interval for the estimation of the optimal parameter. Defaults
-to c(-1,2). If the convergence fails, it is often advisable to choose a smaller
-more suitable interval. For right skewed distributions the negative values may be
-excluded, also values larger than 1 are seldom observed.}
+determining an interval for the estimation of the optimal parameter. The 
+interval is passed to function \code{\link[stats]{optimize}} for the 
+optimization. Defaults to c(-1,2). If the convergence fails, it is often 
+advisable to choose a smaller more suitable interval. For right skewed 
+distributions the negative values may be excluded, also values larger than 1 
+are seldom observed.}
 
 \item{MSE}{if \code{TRUE}, MSE estimates using a parametric bootstrap approach
 are calculated (see also \cite{Gonzalez-Manteiga et al. (2008)}). Defaults
@@ -64,7 +68,9 @@ to \code{FALSE}.}
 
 \item{B}{a number determining the number of bootstrap populations in the
 parametric bootstrap approach (see also \cite{Gonzalez-Manteiga et al. (2008)})
-used in the MSE estimation. Defaults to 50.}
+used in the MSE estimation. The number must be greater than 1. Defaults to 50.
+For practical applications, values larger than 200 are recommended (see also 
+\cite{Molina, I. and Rao, J.N.K. (2010)}).}
 
 \item{seed}{an integer to set the seed for the random number generator. For 
 the usage of random number generation see details. If seed is set to 
@@ -75,14 +81,16 @@ procedures,currently a \code{"parametric"} and a semi-parametric \code{"wild"}
 bootstrap are possible. Defaults to \code{"parametric"}.}
 
 \item{parallel_mode}{modus of parallelization, defaults to an automatic selection 
-of a suitable mode, depending on the operating system, if the number of cpus is 
-chosen higher than 1. For details see \code{\link[parallelMap]{parallelStart}}}
+of a suitable mode, depending on the operating system, if the number of 
+\code{cpus} is chosen higher than 1. For details see 
+\code{\link[parallelMap]{parallelStart}}.}
 
 \item{cpus}{number determining the kernels that are used for the 
-parallelization. Defaults to 1. For details see \code{\link[parallelMap]{parallelStart}}}
+parallelization. Defaults to 1. For details see 
+\code{\link[parallelMap]{parallelStart}}.}
 
 \item{custom_indicator}{a list of functions containing the indicators to be
-calculated additionaly. Such functions must and must only depend on the
+calculated additionally. Such functions must and must only depend on the
 target variable \code{y} and the \code{threshold}. 
 Defaults to \code{NULL}.}
 
@@ -94,7 +102,7 @@ are required. Defaults to \code{FALSE}.}
 An object of class "emdi" that provides estimators for regional
 disaggregated indicators and optionally corresponding MSE estimates. Generic
 functions such as \code{\link{estimators}}, \code{\link{print}}, 
-\code{\link{plot}}, and \code{\link{summary}} have methods that can be used
+\code{\link{plot}} and \code{\link{summary}} have methods that can be used
 to obtain further information. See \code{\link{emdiObject}} for descriptions
 of components of objects of class "emdi".
 }
@@ -104,7 +112,8 @@ approach by \cite{Molina and Rao (2010)}. Point predictions of indicators are
 obtained by Monte-Carlo approximations. Additionally, mean squared error (MSE)
 estimation can be conducted by using a parametric bootstrap approach (see
 also \cite{Gonzalez-Manteiga et al. (2008)}). The unit-level model of
-\cite{Battese, Harter and Fuller (1988)} is fitted by REML method and one of
+\cite{Battese, Harter and Fuller (1988)} is fitted by the restricted maximum
+likelihood (REML) method and one of
 three different transformation types for the dependent variable can be chosen.
 }
 \details{
@@ -121,7 +130,7 @@ and the quintile share ratio.
 data("eusilcA_pop")
 data("eusilcA_smp")
 
-# Example 1: With default setting but na.rm=TRUE
+# Example 1: With default setting but na.rm=TRUE 
 emdi_model <- ebp(fixed = eqIncome ~ gender + eqsize + cash + self_empl + 
 unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + fam_allow + 
 house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
@@ -129,14 +138,16 @@ pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district",
 na.rm = TRUE)
 
 
-# Example 2: With MSE, two additional indicators and function as threshold
+# Example 2: With MSE, two additional indicators and function as threshold -
+# Please note that the example runs for several minutes. For a short check
+# change L and B to lower values.
 emdi_model <- ebp(fixed = eqIncome ~ gender + eqsize + cash + 
 self_empl + unempl_ben + age_ben + surv_ben + sick_ben + dis_ben + rent + 
 fam_allow + house_allow + cap_inv + tax_adj, pop_data = eusilcA_pop,
 pop_domains = "district", smp_data = eusilcA_smp, smp_domains = "district",
 threshold = function(y){0.6 * median(y)}, transformation = "log", 
 L = 50, MSE = TRUE, boot_type = "wild", B = 50, custom_indicator = 
-list( my_max = function(y, threshold){max(y)},
+list(my_max = function(y, threshold){max(y)},
 my_min = function(y, threshold){min(y)}), na.rm = TRUE, cpus = 1)
 }
 }

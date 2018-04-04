@@ -1,7 +1,7 @@
 Package: emdi
 Title: Estimating and Mapping Disaggregated Indicators
-Version: 1.1.1
-Date: 2017-07-06
+Version: 1.1.2
+Date: 2018-04-04
 Authors@R: c(person("Ann-Kristin", "Kreutzmann", role="aut", email="ann-kristin.kreutzmann@fu-berlin.de"),
     person("Soeren", "Pannier", role=c("aut", "cre"), email="soeren.pannier@fu-berlin.de"),
     person("Natalia", "Rojas-Perilla", role="aut", email = "natalia.rojas@fu-berlin.de"),
@@ -18,15 +18,17 @@ Description: Functions that support estimating, assessing and mapping regional
     exported to excel.
 Depends: R (>= 3.3.0)
 License: GPL-2
+URL: https://github.com/SoerenPannier/emdi
 LazyData: true
+Copyright: inst/COPYRIGHTS
 RoxygenNote: 6.0.1
-Imports: nlme, FNN, moments, ggplot2, MuMIn, gridExtra, openxlsx,
-        ggmap, reshape2, graphics, stats, parallelMap, HLMdiag,
-        parallel, simFrame, boot, rgeos, maptools, MASS
-Suggests: testthat, R.rsp, laeken
+Imports: nlme, moments, ggplot2, MuMIn, gridExtra, openxlsx, reshape2,
+        graphics, stats, parallelMap, HLMdiag, parallel, boot, rgeos,
+        maptools, MASS, readODS
+Suggests: testthat, R.rsp, simFrame, laeken
 VignetteBuilder: R.rsp
 NeedsCompilation: no
-Packaged: 2017-07-06 11:31:06 UTC; spannier
+Packaged: 2018-04-04 12:43:13 UTC; spannier
 Author: Ann-Kristin Kreutzmann [aut],
   Soeren Pannier [aut, cre],
   Natalia Rojas-Perilla [aut],
@@ -35,4 +37,4 @@ Author: Ann-Kristin Kreutzmann [aut],
   Nikos Tzavidis [aut]
 Maintainer: Soeren Pannier <soeren.pannier@fu-berlin.de>
 Repository: CRAN
-Date/Publication: 2017-07-06 14:41:03 UTC
+Date/Publication: 2018-04-04 13:06:50 UTC
