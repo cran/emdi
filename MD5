@@ -1,6 +1,6 @@
-83e9c046ffc81f88fa539dbfdf521129 *DESCRIPTION
+c0aa6c4774582b7a438ed49746e58431 *DESCRIPTION
 c70242d3ec6ce3b369f7091cf6fe149f *NAMESPACE
-1bff611a6322759d4dd385319c1e3435 *NEWS.md
+5514f0aba181290fd7ebcee006dfe0cd *NEWS.md
 4c203d76f98d4d1280acadfd61bea0a1 *R/check_compare_arguments.R
 639ccda64fccbf7fa65d1af685bfaa7a *R/check_direct_arguments.R
 ff5a4f49e9aa97ec4eae4a7fc0e57671 *R/check_ebp_arguments.R
@@ -8,7 +8,7 @@ ff5a4f49e9aa97ec4eae4a7fc0e57671 *R/check_ebp_arguments.R
 dae641904723c67bbb5d916db060dbed *R/check_mapplot_arguments.R
 6db0081f6cdbdfb114645526f8b8f998 *R/check_plot_arguments.R
 ec151d4a27ec4504e4e862544755e45b *R/check_writeexcel_arguments.R
-3efce85fe0767baaef4719ee9d11b88a *R/compare.R
+cc1e470ae00cc05b07912b8674038bf0 *R/compare.R
 a287fc7647169d76643faf61bb90d1f3 *R/direct_estimation.R
 683c3c15553081a34257a7f1fbcf067f *R/direct_variance.R
 fd84fcfcadd15eebf33da054b9600c66 *R/ebp.R
@@ -29,7 +29,7 @@ aecc737f92d149b4864129914dfa54ed *R/optimal_parameter.R
 7813ef5209ca111b0c1b902b28cb2a10 *R/point_estimation.R
 f926994a9ad3f336db7cf429d5a998fb *R/point_estimation_direct.R
 c74ae3f36bc04e2449f425c804ec2991 *R/print.emdi.R
-4f8f47f5c239ded9c779fbc5384fda5f *R/summary.emdi.R
+39f6222e56c5dd08456770e14b73ffbe *R/summary.emdi.R
 421775dd8357b0b36ae095d6c31c8958 *R/transformation_functions.R
 600b727f1cada64fe17188f2b81549b0 *R/write.excel.emdi.R
 082e1462dd224773cfa9e9cff10cedbe *R/write.ods.emdi.R
@@ -38,7 +38,7 @@ c74ae3f36bc04e2449f425c804ec2991 *R/print.emdi.R
 436be0221a4f3adfc8f7b9f39d2c77a6 *data/eusilcA_smp.rda
 152befbdffdab32f5d564d840eca0344 *inst/CITATION
 705beb5c1380d04cce10f71f0448ee58 *inst/COPYRIGHTS
-4e10ffa2b3612bf7823726589ff0e24c *inst/doc/vignette_emdi.pdf
+89612898ae729d5847687ecbab207699 *inst/doc/vignette_emdi.pdf
 ca09aff0100ecaf0a06e8649cf19d935 *inst/doc/vignette_emdi.pdf.asis
 6cedd8007b62937d266e09c1fd003eb2 *inst/shapes/shape_austria_dis.rda
 13a800f67743fd3dee7d697c2263b4a7 *man/as.data.frame.estimators.emdi.Rd
