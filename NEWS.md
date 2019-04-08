@@ -1,3 +1,8 @@
+# emdi 1.1.5
+ 
+* Tests updated to deal with new random number generation in R
+* Some spelling improved
+
 # emdi 1.1.4
  
 * Fixed Bug in summary: R2 calculation with MuMIn is now fully working
