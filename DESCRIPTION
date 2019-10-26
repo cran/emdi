@@ -1,7 +1,7 @@
 Package: emdi
 Title: Estimating and Mapping Disaggregated Indicators
-Version: 1.1.5
-Date: 2019-04-08
+Version: 1.1.6
+Date: 2019-10-26
 Authors@R: c(person("Ann-Kristin", "Kreutzmann", role="aut", email="ann-kristin.kreutzmann@fu-berlin.de"),
     person("Soeren", "Pannier", role=c("aut", "cre"), email="soeren.pannier@fu-berlin.de"),
     person("Natalia", "Rojas-Perilla", role="aut", email = "natalia.rojas@fu-berlin.de"),
@@ -15,7 +15,9 @@ Description: Functions that support estimating, assessing and mapping regional
     as well as their precision estimates. The assessment of the used model
     is supported by a summary and diagnostic plots. For a suitable presentation of
     estimates, map plots can be easily created. Furthermore, results can easily be
-    exported to excel.
+    exported to excel. For a detailed description of the package and the methods used
+    see "The {R} Package {emdi} for Estimating and Mapping Regionally Disaggregated Indicators"
+    by Kreutzmann et al. (2019) <doi:10.18637/jss.v091.i07>.
 Depends: R (>= 3.3.0)
 License: GPL-2
 URL: https://github.com/SoerenPannier/emdi
@@ -28,7 +30,7 @@ Imports: nlme, moments, ggplot2, MuMIn, gridExtra, openxlsx, reshape2,
 Suggests: testthat, R.rsp, simFrame, laeken
 VignetteBuilder: R.rsp
 NeedsCompilation: no
-Packaged: 2019-04-08 16:19:12 UTC; spannier
+Packaged: 2019-10-26 14:25:03 UTC; spannier
 Author: Ann-Kristin Kreutzmann [aut],
   Soeren Pannier [aut, cre],
   Natalia Rojas-Perilla [aut],
@@ -37,4 +39,4 @@ Author: Ann-Kristin Kreutzmann [aut],
   Nikos Tzavidis [aut]
 Maintainer: Soeren Pannier <soeren.pannier@fu-berlin.de>
 Repository: CRAN
-Date/Publication: 2019-04-08 16:42:44 UTC
+Date/Publication: 2019-10-26 22:30:03 UTC
