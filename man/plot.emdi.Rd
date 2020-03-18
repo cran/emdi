@@ -4,8 +4,15 @@
 \alias{plot.emdi}
 \title{Plots for an emdi object}
 \usage{
-\method{plot}{emdi}(x, label = "orig", color = c("blue", "lightblue3"),
-  gg_theme = NULL, cooks = TRUE, range = NULL, ...)
+\method{plot}{emdi}(
+  x,
+  label = "orig",
+  color = c("blue", "lightblue3"),
+  gg_theme = NULL,
+  cooks = TRUE,
+  range = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{an object of type "emdi", "model", representing point and, if chosen, 
@@ -13,7 +20,7 @@ MSE estimates obtained by the EBP approach (see also \code{\link{ebp}}).}
 
 \item{label}{argument that enables to customize title and axis labels. There 
 are four options to label the diagnostic plot: (i) original labels ("orig"), 
-(ii) axis lables but no title ("no_title"), (iii) neither axis 
+(ii) axis labels but no title ("no_title"), (iii) neither axis 
 labels nor title ("blank"), (iv) individual labels by a list that needs to 
 have below structure. Six elements can be defined called \code{qq_res, qq_ran, 
 d_res, d_ran, cooks} and \code{box_cox} for the six different plots and these 

@@ -4,9 +4,16 @@
 \alias{compare_plot}
 \title{Shows plots for the comparison of direct and model-based estimates}
 \usage{
-compare_plot(direct, model, indicator = "all", label = "orig",
-  color = c("blue", "lightblue3"), shape = c(16, 16),
-  line_type = c("solid", "solid"), gg_theme = NULL)
+compare_plot(
+  direct,
+  model,
+  indicator = "all",
+  label = "orig",
+  color = c("blue", "lightblue3"),
+  shape = c(16, 16),
+  line_type = c("solid", "solid"),
+  gg_theme = NULL
+)
 }
 \arguments{
 \item{direct}{an object of type "emdi","direct", representing point and MSE
@@ -29,7 +36,7 @@ one of the groups.}
 
 \item{label}{argument that enables to customize title and axis labels. There 
 are three options to label the evaluation plots: (i) original labels ("orig"), 
-(ii) axis lables but no title ("no_title"), (iii) neither axis 
+(ii) axis labels but no title ("no_title"), (iii) neither axis 
 labels nor title ("blank").}
 
 \item{color}{a vector with two elements. The first color determines
