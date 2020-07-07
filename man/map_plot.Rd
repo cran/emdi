@@ -2,7 +2,7 @@
 % Please edit documentation in R/map_plot.R
 \name{map_plot}
 \alias{map_plot}
-\title{Visualizes regional disaggregrated estimates on a map}
+\title{Visualizes regional disaggregated estimates on a map}
 \usage{
 map_plot(
   object,
@@ -28,14 +28,18 @@ shall be returned: (i) all calculated indicators ("all");
 "Quantile_75", "Quantile_90", "Head_Count", "Poverty_Gap", "Gini", 
 "Quintile_Share" or the function name/s of "custom_indicator/s"; 
 (iii) groups of indicators: "Quantiles", "Poverty" or 
-"Inequality". Defaults to "all". Note, additional custom indicators can be 
+"Inequality". Note, additional custom indicators can be 
 defined as argument for model-based approaches (see also \code{\link{ebp}}) 
 and do not appear in groups of indicators even though these might belong to 
-one of the groups.}
+one of the groups. If the \code{model} argument is of type "model","fh", 
+indicator can be set to "all", "Direct", FH", or "FH_Bench" (if emdi 
+object is overwritten by function benchmark). Defaults to "all".}
 
-\item{MSE}{optional logical. If \code{TRUE}, the MSE is also visualized.}
+\item{MSE}{optional logical. If \code{TRUE}, the MSE is also visualized. 
+Defaults to \code{FALSE}.}
 
-\item{CV}{optional logical. If \code{TRUE}, the CV is also visualized.}
+\item{CV}{optional logical. If \code{TRUE}, the CV is also visualized. 
+Defaults to \code{FALSE}.}
 
 \item{map_obj}{an \code{SpatialPolygonsDataFrame} object as defined by the
 \pkg{sp} package on which the data should be visualized.}
@@ -53,15 +57,14 @@ color in the plots.}
 
 \item{scale_points}{a structure defining the lowest, the mid and the highest 
 value of the colorscale. If a numeric vector of length two is given, this scale
-will be used for every plot. Alternatively a list defining colors for each 
-plot separately may be given. Please see the details section and examples for 
-this.}
+will be used for every plot. Alternatively, a list defining colors for each 
+plot separately may be given.}
 
 \item{guide}{character passed to 
 \code{scale_colour_gradient} from \pkg{ggplot2}.
 Possible values are "none", "colourbar", and "legend".}
 
-\item{return_data}{if set to \code{TRUE} a fortified data frame including the 
+\item{return_data}{if set to \code{TRUE}, a fortified data frame including the 
 map data as well as the chosen indicators is returned. Customized maps can 
 easily be obtained from this data frame via the package \pkg{ggplot2}. Defaults 
 to \code{FALSE}.}
@@ -75,7 +78,7 @@ Function \code{map_plot} creates spatial visualizations of the estimates
 obtained by small area estimation methods or direct estimation.
 }
 \examples{
-\dontrun{
+\donttest{
 data("eusilcA_pop")
 data("eusilcA_smp")
 
@@ -114,6 +117,6 @@ map_plot(object = emdi_model, MSE = FALSE, CV = TRUE,
         }
 }
 \seealso{
-\code{\link{ebp}}, \code{\link{emdiObject}},
+\code{\link{direct}}, \code{\link{ebp}}, \code{\link{fh}}, \code{\link{emdiObject}},
 \code{\link[maptools]{readShapePoly}}
 }

@@ -5,12 +5,16 @@ mse_emdi <- function(object, indicator = "all", CV = FALSE) {
     stop('No MSE estimates in emdi object: arguments MSE and CV have to be FALSE
           or a new emdi object with variance/MSE needs to be generated.')
   }
-  if ((ncol(object$ind) == 11) && any(indicator == "Custom" || indicator == "custom")) {
+  if ((ncol(object$ind) == 11) && any(indicator == "Custom" | indicator == "custom")) {
     stop('No individual indicators are defined. Either select other indicators or
          define custom indicators and generate a new emdi object. See also help(ebp).')
   }
 
   # Calculation of CVs
+  if(inherits(object, "fh")) {
+    object$MSE <- object$MSE[, c("Domain", "Direct", "FH")]
+    object$ind <- object$ind[, c("Domain", "Direct", "FH")]
+  }
   all_cv <- sqrt(object$MSE[,-1]) / object$ind[,-1]
 
   if (any(indicator == "Quantiles") || any(indicator == "quantiles")) {
@@ -23,7 +27,7 @@ mse_emdi <- function(object, indicator = "all", CV = FALSE) {
     indicator = c(indicator[!(indicator == "inequality" || indicator == "Inequality")], "Gini", "Quintile_Share")
   }
   if (any(indicator == "custom") || any(indicator == "Custom")) {
-     indicator = c(indicator[!(indicator == "custom" || indicator == "Custom")],
+     indicator = c(indicator[!(indicator == "custom" | indicator == "Custom")],
                    colnames(object$ind[-c(1,2,3,4,5,6,7,8,9,10,11)]))
   }
 
@@ -31,8 +35,15 @@ mse_emdi <- function(object, indicator = "all", CV = FALSE) {
     ind <- object$MSE
     ind_cv <- cbind(Domain = object$MSE[,1], all_cv)
     ind_name <- "All indicators"
-  }
-  else {
+  } else if (any(indicator == "fh") || any(indicator == "FH" )) {
+    ind <- object$MSE[, c("Domain", "FH")]
+    ind_cv <- cbind(Domain = object$MSE[,1], all_cv)
+    ind_name <- "Fay-Herriot estimates"
+  } else if (any(indicator == "Direct") || any(indicator == "direct" )) {
+    ind <- object$MSE[, c("Domain", "Direct")]
+    ind_cv <- cbind(Domain = object$MSE[,1], all_cv)
+    ind_name <- "Direct estimates used in Fay-Herriot approach"
+  } else {
     selection = colnames(object$MSE[-1]) %in% indicator
     ind <- object$MSE[,c(TRUE, selection)]
     ind_cv <- data.frame(Domain = object$MSE[,1], all_cv[, selection])
