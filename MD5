@@ -1,6 +1,6 @@
-29a6b511e1753d401f80d45edb1c545a *DESCRIPTION
+c045d1d29dc0f7c265d8f3f875be9880 *DESCRIPTION
 4c5e99d016914c338ce892518f10e866 *NAMESPACE
-2f554df4b2604fa6c1a4d732acf08607 *NEWS.md
+9199352a9bfc8a29d13ba0756896e76b *NEWS.md
 421c2236b19667852eb4c6df77fcfec1 *R/FH.R
 8664afe7b9dee361fbe5effc01139119 *R/auxiliary_functions.R
 b27baa7999fc9fb40307a922d3458fbc *R/back_transformation.R
@@ -15,7 +15,7 @@ dae641904723c67bbb5d916db060dbed *R/check_mapplot_arguments.R
 ec151d4a27ec4504e4e862544755e45b *R/check_writeexcel_arguments.R
 41587d41ceeda138d523f29edf2af06d *R/combine_data.R
 ec427bd93f98150a521dcabab3e5dc20 *R/compare.R
-93637beae2c4682b2b75b4dcfc0d9297 *R/compare_plot.R
+5275a21221ad8087485dc2ba1cefea1d *R/compare_plot.R
 50adf632b886668c954c4ff97276fd6b *R/direct_estimation.R
 683c3c15553081a34257a7f1fbcf067f *R/direct_variance.R
 626d5022661e9d93affe6879ec54e2de *R/drop1.add1.fh.R
@@ -59,10 +59,10 @@ a1c314d7fb0991b6a018bf00bb9e7064 *data/eusilcA_prox.rda
 436be0221a4f3adfc8f7b9f39d2c77a6 *data/eusilcA_smp.rda
 3b06b18b1e2293920cc1a0f3ba9b69e1 *data/eusilcA_smpAgg.rda
 b91c067ed43fd388b5f3b9789618a4da *inst/CITATION
-adf3e165aba40655c082a55eaf7349c2 *inst/COPYRIGHTS
+9bde12a3c508103fbea2d1c532a476d4 *inst/COPYRIGHTS
 89612898ae729d5847687ecbab207699 *inst/doc/vignette_emdi.pdf
 ca09aff0100ecaf0a06e8649cf19d935 *inst/doc/vignette_emdi.pdf.asis
-ee7cdbe876e1f164ff9960782354dc1a *inst/doc/vignette_fh.pdf
+04eced29f8a14fce8df8bcf7ab28b1c5 *inst/doc/vignette_fh.pdf
 d750ca6bfb451dc83074424c4e8e6387 *inst/doc/vignette_fh.pdf.asis
 6cedd8007b62937d266e09c1fd003eb2 *inst/shapes/shape_austria_dis.rda
 13a800f67743fd3dee7d697c2263b4a7 *man/as.data.frame.estimators.emdi.Rd
@@ -71,8 +71,8 @@ d750ca6bfb451dc83074424c4e8e6387 *inst/doc/vignette_fh.pdf.asis
 5ae8fd232c02efad30d02d084b20dbc2 *man/combine_data.Rd
 7bfc8f941574ba23726f26b659b8ed85 *man/compare.Rd
 dab7b9080a8b5e60894c959480751ca8 *man/compare.fh.Rd
-85387c89fec7ba436270e992a275791c *man/compare_plot.Rd
-61b21fb5985ab6788ae29305942f11b0 *man/compare_plot.emdi.Rd
+4eb2b03dda1a9d3754c59b7e66082477 *man/compare_plot.Rd
+ae72c72e8379cb356d77e529255f86c9 *man/compare_plot.emdi.Rd
 ff92d596f77126a397d76d4142e53e0a *man/data_transformation.Rd
 0d761e213962fee567a47ed98ce71690 *man/direct.Rd
 ee90081d07c04f9d5ac0846467db691c *man/ebp.Rd
@@ -156,7 +156,7 @@ f2913c0bcbd787a7d4c89f722a5b2e5b *tests/testthat/FH/transf_arcsin_sm.csv
 6f17f07bd5d3c6a0da7ab8fe6ec685b5 *tests/testthat/test_direct_estimation.R
 a4930b76ffbccc08d1396a1a70095774 *tests/testthat/test_fh_std_spatial_robust.R
 a5b487b61a24f97a0dd8a70650cf1729 *tests/testthat/test_fh_transformation.R
-0a40b6887ccbefe16be1b8a9767dc174 *tests/testthat/test_fh_variance.R
+22b0c1ebef7568f6c252fdef2326bdbd *tests/testthat/test_fh_variance.R
 2d765ec224d93c6d32f9d239cdcc903e *tests/testthat/test_optimal_par.R
 20ff4ff63c00864a25668aa0e27e3104 *tests/testthat/test_point_estimation.R
 ca09aff0100ecaf0a06e8649cf19d935 *vignettes/vignette_emdi.pdf.asis
