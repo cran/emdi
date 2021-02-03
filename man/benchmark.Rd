@@ -7,7 +7,7 @@
 benchmark(object, benchmark, share, type = "raking", overwrite = FALSE)
 }
 \arguments{
-\item{object}{an object of type "model","fh".}
+\item{object}{an object of type "fh".}
 
 \item{benchmark}{a number determining the benchmark value.}
 
@@ -29,7 +29,7 @@ A data frame containing a domain indicator (Domain), direct estimates
 (Direct), point predictions (FH), benchmarked point predictions (FH_Bench) and 
 a variable indicating out-of-sample domains Out (1 for out-of-sample, 0 for 
 in-sample) . If overwrite is set to TRUE, the fh object is returned, but the 
-point predictions of the ind data frame are substituted by the benchmarked 
+point predictions of the ind data frame are complemented by the benchmarked 
 results.
 }
 \description{

@@ -2,7 +2,7 @@
 #'
 #' This function benchmarks the EBLUP estimates of an area-level model.
 #'
-#' @param object an object of type "model","fh".
+#' @param object an object of type "fh".
 #' @param benchmark a number determining the benchmark value.
 #' @param share a vector containing the shares of the population size per area and 
 #' the total population size (N_d/N).Values must be sorted like the domains in 
@@ -18,7 +18,7 @@
 #' (Direct), point predictions (FH), benchmarked point predictions (FH_Bench) and 
 #' a variable indicating out-of-sample domains Out (1 for out-of-sample, 0 for 
 #' in-sample) . If overwrite is set to TRUE, the fh object is returned, but the 
-#' point predictions of the ind data frame are substituted by the benchmarked 
+#' point predictions of the ind data frame are complemented by the benchmarked 
 #' results.
 #' @details
 #' The benchmarking algorithm only works, if FH estimates are available. 
@@ -64,18 +64,18 @@ benchmark <- function(object, benchmark, share, type = "raking", overwrite = FAL
   estim <- object$ind$FH
   FH_bench <- rep(NA, length(object$ind$FH))
   
-  if (type == "raking"){
+  if (type == "raking") {
     FH_bench <- estim + benchmark - sum(share * estim)
-  } else if (type == "ratio"){
-    phi <- share/object$ind$FH
-    FH_bench <- estim + (1/(sum(share^2/phi))) * 
+  } else if (type == "ratio") {
+    phi <- share / object$ind$FH
+    FH_bench <- estim + (1 / (sum(share^2 / phi))) * 
       (benchmark - sum(share * estim)) * (share / phi)
-  } else if (type == "MSE_adj"){
-    phi <- share/object$MSE$FH
-    FH_bench <- estim + (1/(sum(share^2/phi))) * 
+  } else if (type == "MSE_adj") {
+    phi <- share / object$MSE$FH
+    FH_bench <- estim + (1 / (sum(share^2 / phi))) * 
       (benchmark - sum(share * estim)) * (share / phi)
   }
-  if (overwrite == FALSE){
+  if (overwrite == FALSE) {
     EBLUP_data_bench <- data.frame(Domain = object$ind$Domain)
     EBLUP_data_bench$Direct <- object$ind$Direct
     EBLUP_data_bench$FH <- object$ind$FH
@@ -100,10 +100,13 @@ benchmark <- function(object, benchmark, share, type = "raking", overwrite = FAL
 # Argument checking
 check_benchmark_arguments <- function(object, benchmark, share, type, 
                                       overwrite){
-  if(!inherits(object, "fh")){
+  if (!inherits(object, "fh")) {
     stop('Object needs to be fh object.')
   }
-  if ((any(is.na(object$ind$FH)))){
+  
+  throw_class_error(object, "fh")
+  
+  if ((any(is.na(object$ind$FH)))) {
     stop("If no predictions for out-of-sample domains 
          are available, the benchmarking algorithm does not work.")
   }
@@ -113,12 +116,12 @@ check_benchmark_arguments <- function(object, benchmark, share, type,
     stop("Type must be a character. The three options for types are ''raking'', 
          ''ratio'' and ''MSE_adj''.")
   }
-  if ((is.null(object$MSE)) && type == "MSE_adj"){
+  if ((is.null(object$MSE)) && type == "MSE_adj") {
     stop("If no MSE estimates are available,
          ''MSE_adj'' benchmarking does not work. The fh object has to contain MSE 
           estimates. Therefore set the MSE argument of the fh function to TRUE.")
   }
-  if ((any(is.na(object$MSE$FH))) && type == "MSE_adj"){
+  if ((any(is.na(object$MSE$FH))) && type == "MSE_adj") {
     stop("For the benchmarking type ''MSE_adj'' the MSE estimates of the fh 
          object must not contain NAs. If no MSE estimates for out-of-sample domains 
          are available,''MSE_adj'' benchmarking does not work.")

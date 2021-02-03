@@ -1,6 +1,8 @@
 #' Combines sample and population data
 #'
-#' This function combines different data sets.
+#' This function combines the aggregated population information with the 
+#' aggregated sample data. The merge is based on the domains. Out-of-sample 
+#' domains will have NA values for the variables from the sample data. 
 #'
 #' @param pop_data a data frame with population data.
 #' @param pop_domains a character string indicating the domain variable that is
@@ -14,18 +16,18 @@
 
 combine_data <- function(pop_data, pop_domains, smp_data, smp_domains) {
 
-
   smp_domains_vec <- smp_data[, smp_domains]
   pop_domains_vec <- pop_data[, pop_domains]
+  
+  if(all(smp_domains_vec %in% pop_domains_vec) == FALSE) {
+    stop("All sample domains need to be available in population domains.")
+  }
+  if(all(pop_domains_vec %in% smp_domains_vec) == FALSE) {
+    cat("Non-sampled domains exist.\n")
+  }
 
-  obs_dom <- pop_domains_vec %in% smp_domains_vec
-  smp_data[, smp_domains] <- NULL
-  pop_data[, pop_domains] <- NULL
-
-
-  smp_data[, pop_domains] <- pop_domains_vec[obs_dom == TRUE]
-  pop_data[, pop_domains] <- pop_domains_vec
-  data <- merge(smp_data, pop_data, by = pop_domains, all = TRUE)
+  data <- merge(smp_data, pop_data, by.x = smp_domains, by.y = pop_domains,
+                all = TRUE)
 
   return(data)
 }

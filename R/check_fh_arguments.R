@@ -4,8 +4,8 @@
 # Function called in fh
 
 fh_check <- function(fixed, vardir, combined_data, domains, method, interval,k, 
-                     c, transformation, backtransformation, eff_smpsize,
-                     correlation, corMatrix, Ci, tol, maxit, MSE, 
+                     mult_constant, transformation, backtransformation, 
+                     eff_smpsize, correlation, corMatrix, Ci, tol, maxit, MSE, 
                      mse_type, B, seed){
   
   if (is.null(fixed) || !inherits(fixed, "formula")) {
@@ -54,8 +54,9 @@ fh_check <- function(fixed, vardir, combined_data, domains, method, interval,k,
   if (is.null(k)  || !(is.numeric(k) && length(k) == 1)) { 
     stop("k needs to be a single numeric value. See also help(fh).")
   }
-  if (is.null(c)  || !(is.numeric(c) && length(c) == 1)) { 
-    stop("c needs to be a single numeric value. See also help(fh).")
+  if (is.null(mult_constant)  || !(is.numeric(mult_constant) && 
+                                   length(mult_constant) == 1)) { 
+    stop("mult_constant needs to be a single numeric value. See also help(fh).")
   }
   if (is.null(transformation) ||  !is.character(transformation) || 
       !(transformation == "arcsin" || transformation == "log" 
@@ -155,14 +156,21 @@ fh_check <- function(fixed, vardir, combined_data, domains, method, interval,k,
     stop('If MSE is set to TRUE and a bootstrap MSE estimation method is chosen, 
           the argument B is required and cannot be NULL. See also help(fh).')
   }
+  if (!(is.numeric(B) && (length(B) == 1 || length(B) == 2))) {
+    stop('B needs to be either a single number or a numeric vector of length 2 
+         defining the number of bootstrap iterations. The first element defines 
+         the number of bootstrap iterations for the MSE estimation. The second 
+         element determines the number of bootstrap iterations for the information 
+         criteria by Marhuenda et al. (2014). See also help(fh).')
+  }
   if (MSE == TRUE && (mse_type == "boot" || mse_type == "spatialparboot" || 
                       mse_type == "spatialparbootbc" || 
                       mse_type == "spatialnonparboot" ||
                       mse_type == "spatialnonparbootbc") && 
-      !(is.numeric(B) && length(B) == 1 && B > 1)) {
+      !(B[1] > 1)) {
     stop('If MSE is set to TRUE and a bootstrap MSE estimation method is chosen, 
-          A single numeric value for the number of bootstrap samples (B) needs 
-          to be chosen that is greater than 1. See also help(fh).')
+          The number of bootstrap samples (B) needs to be greater than 1. See 
+         also help(fh).')
   }
   if (!is.null(seed) && (!is.numeric(seed) || !(is.numeric(seed) && length(seed) == 1))) {
     stop("The seed must be a single value, interpreted as an integer, or NULL
@@ -211,9 +219,9 @@ fh_fw_check1 <- function(fixed, vardir, combined_data, domains, eff_smpsize = NU
 # Check all possible allowed combinations
 
 fh_combinations <- function(fixed, vardir, combined_data, domains, method, 
-                            interval, k, c, transformation, backtransformation, 
-                            eff_smpsize, correlation, corMatrix, Ci, tol, 
-                            maxit, MSE, mse_type, B, seed){
+                            interval, k, mult_constant, transformation, 
+                            backtransformation, eff_smpsize, correlation, 
+                            corMatrix, Ci, tol, maxit, MSE, mse_type, B, seed){
   
   if (is.null(transformation) ||  !is.character(transformation) || 
       !(transformation == "arcsin" || transformation == "log" 
@@ -280,9 +288,9 @@ fh_combinations <- function(fixed, vardir, combined_data, domains, method,
          the arguments k, tol and maxit are required and cannot be ''NULL''. 
          See also help(fh).")
   }
-  if ((method == "reblupbc") && is.null(c)){
+  if ((method == "reblupbc") && is.null(mult_constant)){
     stop("For the bias corrected robust estimation method (method = ''reblupbc''), 
-         the argument c is required and cannot be ''NULL''. See also help(fh).")
+         the argument mult_constant is required and cannot be ''NULL''. See also help(fh).")
   }
   if ((correlation == "spatial") && (is.null(corMatrix) || is.null(tol) || 
                                      is.null(maxit))){

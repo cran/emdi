@@ -3,7 +3,7 @@
 #' This generic function selects a model by different criteria in a stepwise 
 #' algorithm.
 #'
-#' @param object an object of type "emdi","model".
+#' @param object an object of type "emdi".
 #' @param scope formula or a list including two formulas (\code{lower} and 
 #' \code{upper}) specifying the models considered in the step function. 
 #' Defaults to \code{NULL}.
@@ -16,9 +16,10 @@
 #' provided during the stepwise procedure. Defaults to \code{TRUE}.
 #' @param steps a number determining the maximum number of steps. Defaults to 1000.
 #' @param ... arguments to be passed to or from other methods.
-#' @return The return of \code{step} depends on the class of its argument. The
-#' documentation of particular methods gives detailed information about the
-#' return of that method.
+#' @return The return of \code{step} depends on the class of its argument. Please 
+#' refer to the documentation of the \code{\link[stats]{step}} function of the stats package for 
+#' details of the default method.
+#' @name step
 #' @export
 #' @importFrom stats factor.scope 
 
@@ -26,12 +27,12 @@ step <- function (object, scope, criteria, direction, trace, steps,
                   ...) UseMethod("step") 
 
 
-#' Method \code{step.default} performs a variable selection for lm models.
+#' Method \code{step.default} performs a variable selection for lm models by AIC.
 #'
-#' @param object an object of type "emdi","model" or a \code{lm} object.
+#' @param object an object of type "emdi", or a \code{lm} object.
 #' @param ... arguments to be passed to or from other methods.
 #' @details The default method of the generic function \code{step} 
-#' applies the \code{step} function for \code{lm} models of the stats package. 
+#' applies the \code{\link[stats]{step}} function for \code{lm} models of the stats package. 
 #' Please refer to the documentation of the \code{step} function of 
 #' the stats package for details.
 #' @seealso \code{\link[stats]{step}}
@@ -46,8 +47,8 @@ step.default <- function(object,...) stats::step(object, ...)
 #' Method \code{step.fh} selects a Fay-Herriot model by different 
 #' information criteria in a stepwise algorithm.
 #'
-#' @param object an object of type "emdi","model","fh" that contains the chosen 
-#' information criteria.
+#' @param object an object of type "fh" that contains the chosen 
+#' information criterion or of type "lm" for the default method.
 #' @param scope formula or a list including two formulas (\code{lower} and 
 #' \code{upper}) specifying the models considered in the step function. 
 #' Defaults to \code{NULL}.
@@ -63,22 +64,22 @@ step.default <- function(object,...) stats::step(object, ...)
 #' provided during the stepwise procedure. Defaults to \code{TRUE}.
 #' @param steps a number determining the maximum number of steps. Defaults to 1000.
 #' @param ... additional arguments that are not used in this method.
-#' @return Information about the resulting "best" model due to the chosen 
-#' information criterion: 
+#' @return For the fh method information about the resulting "best" model due to 
+#' the chosen information criterion is provided: 
 #' \item{\code{call}}{the function call that produced the object.}
 #' \item{\code{coefficients}}{data frame containing the estimated regression 
 #' coefficients, the standard errors and the \code{t}- and \code{p}-values of 
 #' the explanatory variables.} 
 #' @details The information criteria "\code{AICc}", "\code{AICb1}", 
 #' "\code{AICb2}", "\code{KIC}", "\code{KICc}", "\code{KICb1}" and 
-#' "\code{KICb2}" are especially developed for FH models by 
+#' "\code{KICb2}" are especially developed for Fay-Herriot models by 
 #' \cite{Marhuenda et al. (2014)}. They are based on a bootstrap 
 #' algorithm. If one of the criteria is chosen, make sure that the 
-#' bootstrap iterations (\code{B}) of the fh object are set to a positive number. 
-#' For some model extensions of the fh model only the "\code{AIC}" and 
+#' bootstrap iterations (\code{B}) of the "fh" object are set to a positive number. 
+#' For some model extensions of the Fay-Herriot model only the "\code{AIC}" and 
 #' the "\code{BIC}" information criteria are provided and for some none 
 #' of the information criteria are defined. Check the model_select 
-#' component of the fh object (objectname$model$model_select). If no 
+#' component of the "fh" object (objectname$model$model_select). If no 
 #' criteria are provided, it is not possible to apply the stepwise 
 #' variable selection algorithm.
 #' @references 
@@ -108,13 +109,14 @@ step.default <- function(object,...) stats::step(object, ...)
 #' step(fh_std, criteria = "KICb2")
 #' }
 #' @export
+#' @rdname step
 #' @method step fh
 #' @importFrom stats factor.scope   
 #' @importFrom utils capture.output
 
 step.fh <- function(object, scope = NULL, criteria = "AIC", 
-                     direction = "both", trace = TRUE,
-                     steps = 1000, ...){
+                    direction = "both", trace = TRUE,
+                    steps = 1000, ...){
   
   step_check(object = object, scope = scope, criteria = criteria,
              direction = direction, trace = trace, steps = steps)
@@ -128,11 +130,14 @@ step.fh <- function(object, scope = NULL, criteria = "AIC",
     cat("Seed in fh object not defined, 123 used as default seed. \n")
   }
   
+  startobject <- object
+  
   cut.string <- function(string) {
     if (length(string) > 1L) 
       string[-1L] <- paste0("\n", string[-1L])
     string
   }
+  
   step.results <- function(models, fit, object, catmessage) { 
     change <- vapply(models, "[[" , "change", FUN.VALUE = character(1))
     rdf <- vapply(models, "[[", "df.resid", FUN.VALUE = numeric(1))
@@ -145,12 +150,19 @@ step.fh <- function(object, scope = NULL, criteria = "AIC",
     aod <- data.frame(Step = I(change), Df = ddf, criteria = infcriteria, 
                       check.names = FALSE)  
     attr(aod, "heading") <- heading
-    fit$anova <- aod
-    list(Call = fit$call,
-         Coefficients = fit$model$coefficients,
-         catmessage = catmessage)
-    
+    #fit$anova <- aod
+    fit$call$MSE <- startobject$call$MSE
+    fit$call$formula <- NULL
+    invisible(fit <- eval(fit$call))
+    if (catmessage == TRUE){
+      cat("\n")
+      cat("Please note that the model selection criteria are only computed based on 
+       the in-sample domains. \n \n ")
+    }
+    class(fit) <- c("step_fh", "fh", "emdi")
+    fit
   }
+  
   Terms <- terms(object$fixed)
   object$call$formula <- object$formula <- Terms
   md <- missing(direction)
@@ -240,7 +252,7 @@ step.fh <- function(object, scope = NULL, criteria = "AIC",
     fit$call$MSE <- FALSE
     fit$call$formula <- NULL  
     catmessage <- capture.output(fit <- eval(fit$call))
-   
+    
     nnew <- fit$framework$N_dom_smp 
     if (all(is.finite(c(n, nnew))) && nnew != n) 
       stop("number of rows in use has changed: remove missing values?")
@@ -256,40 +268,17 @@ step.fh <- function(object, scope = NULL, criteria = "AIC",
     if (bcriteria >= infcriteria + 1e-07) 
       break
     nm <- nm + 1
-    models[[nm]] <- list(df.resid = n - edf,change = "", criteria = bcriteria)
+    models[[nm]] <- list(df.resid = n - edf, change = "", criteria = bcriteria)
   }
-  if (any(grepl(pattern = c("note that the model selection criteria are only computed based"),
-                x = catmessage))){
+  if (any(grepl(pattern = c("Please note that the model selection criteria are only computed based on 
+       the in-sample domains."), x = ""))){
     catmessage <- TRUE
-  } else { catmessage <- FALSE}
-  results <- step.results(models = models[seq(nm)], fit, object, catmessage) 
-  class(results) <- "step"
-  results
+} else {catmessage <- FALSE}
+  step.results(models = models[seq(nm)], fit, object, catmessage) 
+  #list(summary(results), invisible(results))
 }
 
 
-#' Prints step function results
-#'
-#' The elements described in step are printed.
-#' @param x an object of type "step".
-#' @param ... further arguments passed to or from other methods.
-#' @export
-
-print.step <- function(x, ...)
-{
-  cat("\n")
-  cat("Call:\n ")
-  print(x$Call)
-  cat("\n")
-  cat("Coefficients:\n ")
-  print(x$Coefficients)
-  cat("\n")
-  if (x$catmessage == TRUE){
-    cat("Please note that the model selection criteria are only computed based on 
-       the in-sample domains. \n ")
-  }
-  
-}
 
 step_check <- function(object, scope, criteria, direction, trace, 
                        steps){
@@ -315,12 +304,12 @@ Otherwise the comparison of models based on information criteria would not be va
   }
   if (is.null(object$model$model_select[[criteria]])){
     stop("The fh object does not contain the chosen criterion. Please set the 
-         input argument B of the fh function to a positive number to receive 
-         results for all of the information criteria. For some model extensions of 
-         the fh model the information criteria are not defined. Check the 
-         model_select component of the fh object (objectname$model$model_select). 
-         If no criteria are provided, it is not possible to apply the 
-         stepwise variable selection algorithm.")
+         second element of the input argument B of the fh function to a number 
+         greater than 1 to receive results for all of the information criteria. 
+         For some model extensions of the fh model the information criteria are 
+         not defined. Check the model_select component of the fh object 
+         (objectname$model$model_select). If no criteria are provided, it is not 
+         possible to apply the stepwise variable selection algorithm.")
   }
   if (is.null(direction) || !(direction == "forward" 
                               || direction == "backward" 
@@ -346,9 +335,15 @@ Otherwise the comparison of models based on information criteria would not be va
 }
 
 
-
-
-
+#' @export
+print.step_fh <- function(x, ...) {
+  cat("\n")
+  cat("Call:\n ")
+  print(x$call)
+  cat("\n")
+  cat("Coefficients:\n ")
+  printCoefmat(as.matrix(x$model$coefficients), has.Pvalue = TRUE)
+} 
 
 
 

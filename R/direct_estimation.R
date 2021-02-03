@@ -24,7 +24,7 @@
 #' estimation and in each iteration of the parametric bootstrap. See Example 2 
 #' for using a function as threshold.  A threshold is needed for calculation e.g. 
 #' of head count ratios and poverty gaps. The argument defaults to \code{NULL}. 
-#' In this case the threshold is set to 60\% of the median of the variable that 
+#' In this case, the threshold is set to 60\% of the median of the variable that 
 #' is selected as \code{y} similarly to the at-risk-of-poverty rate used in the 
 #' EU (see also \cite{Social Protection Committee 2001}). However, any desired 
 #' threshold can be chosen.
@@ -51,12 +51,11 @@
 #' might not be used in the additional function. Defaults to \code{NULL}.
 #' @param na.rm if \code{TRUE}, observations with \code{NA} values are deleted 
 #' from the sample data. Defaults to \code{FALSE}. 
-#' @return An object of class "emdi", "direct" that provides direct estimators 
+#' @return An object of class "direct", "emdi" that provides direct estimators 
 #' for regional disaggregated indicators and optionally corresponding variance 
-#' estimates. Generic functions such as \code{\link{compare_plot}}, 
-#' \code{\link{estimators}}, \code{\link{print}} and \code{\link{summary}} have 
-#' methods that can be used to obtain further information. See 
-#' \code{\link{emdiObject}} for descriptions of components of objects of class "emdi".
+#' estimates. Several generic functions have methods for the 
+#' returned object. For a full list and descriptions of the components of objects 
+#' of class "emdi", see \code{\link{emdiObject}}.
 #' @details The set of predefined indicators includes the mean, median, four 
 #' further quantiles (10\%, 25\%, 75\% and 90\%), head count ratio, poverty gap, 
 #' Gini coefficient and the quintile share ratio. 
@@ -67,14 +66,13 @@
 #' Social Protection Committee (2001). Report on Indicators in the Field of
 #' Poverty and Social Exclusions, Technical Report, European Union.
 #' @seealso \code{\link{emdiObject}}, \code{\link[nlme]{lme}},
-#' \code{\link{estimators.emdi}}, \code{\link{print.emdi}}, 
-#' \code{\link{summary.emdi}}
+#' \code{\link{estimators.emdi}}, \code{\link{emdi_summaries}}
 #' @examples
 #' \donttest{
 #' # Loading sample data
 #' data("eusilcA_smp")
 #'
-#' # Example 1: Without weights and naive bootstrap
+#' # Example 1: With weights and naive bootstrap
 #' emdi_direct <- direct(y = "eqIncome", smp_data = eusilcA_smp, 
 #' smp_domains = "district", weights = "weight", threshold = 11064.82, var = TRUE, 
 #' boot_type = "naive", B = 50, seed = 123, X_calib = NULL, totals = NULL, 
@@ -227,12 +225,13 @@ direct <- function(y,
     framework = framework[c("N_dom_smp",
                          "N_smp",
                          "smp_domains",
+                         "smp_data",
                          "smp_domains_vec")],
     call = call,
     successful_bootstraps = sucInd
     )
   
-  class(direct_out) <- c("emdi", "direct")
+  class(direct_out) <- c( "direct", "emdi")
   return(direct_out)
 }
 

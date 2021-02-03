@@ -1,7 +1,7 @@
 #' Exports an emdiObject to an Excel file or OpenDocument Spreadsheet 
 #'
 #' Function \code{write.excel} enables the user to export point and MSE 
-#' estimates as well as diagnostics from \code{summary.emdi} to an Excel file. 
+#' estimates as well as diagnostics from the \code{summary} to an Excel file. 
 #' The user can choose if the results should be reported in one or several Excel 
 #' sheets. Furthermore, a selection of indicators can be specified. 
 #' Respectively the function \code{write.ods} enables the export to OpenDocument
@@ -19,7 +19,7 @@
 #' "Inequality". Note, additional custom indicators can be 
 #' defined as argument for model-based approaches (see also \code{\link{ebp}}) 
 #' and do not appear in groups of indicators even though these might belong to 
-#' one of the groups. If the \code{model} argument is of type "model","fh", 
+#' one of the groups. If the \code{model} argument is of type "fh", 
 #' indicator can be set to "all", "Direct", FH", or "FH_Bench" (if emdi 
 #' object is overwritten by function benchmark). Defaults to "all".
 #' @param MSE logical. If \code{TRUE}, the MSE of the emdiObject is exported. 
@@ -293,9 +293,9 @@ add_summary_fh <- function(object, wb, headlines_cs) {
                                        "k", "MSE estimation")]
     } else if (su$method$method == "reblupbc") {
       estimMethods$k <- su$model$k
-      estimMethods$c <- su$model$c
+      estimMethods$mult_constant <- su$model$mult_constant
       estimMethods <- estimMethods[, c("Variance estimation", "Estimated variance", 
-                                       "k", "c", "MSE estimation")]
+                                       "k", "mult_constant", "MSE estimation")]
     }
   } else if (su$model$correlation == 'spatial') {
     estimMethods <- data.frame(su$method$method, su$model$variance['variance'], 
@@ -309,9 +309,9 @@ add_summary_fh <- function(object, wb, headlines_cs) {
                                        "k", "Spatial correlation", "MSE estimation")]
     } else if (su$method$method == "reblupbc") {
       estimMethods$k <- su$model$k
-      estimMethods$c <- su$model$c
+      estimMethods$mult_constant <- su$model$mult_constant
       estimMethods <- estimMethods[, c("Variance estimation", "Estimated variance", 
-                                       "k", "c", "Spatial correlation", "MSE estimation")]
+                                       "k", "mult_constant", "Spatial correlation", "MSE estimation")]
     }
   }
     

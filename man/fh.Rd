@@ -12,7 +12,7 @@ fh(
   method = "reml",
   interval = NULL,
   k = 1.345,
-  c = 1,
+  mult_constant = 1,
   transformation = "no",
   backtransformation = NULL,
   eff_smpsize = NULL,
@@ -23,7 +23,7 @@ fh(
   maxit = 100,
   MSE = FALSE,
   mse_type = "analytical",
-  B = 50,
+  B = c(50, 0),
   seed = 123
 )
 }
@@ -55,9 +55,9 @@ the variance of the random effects. Methods that can be chosen
 (iv) adjusted ML following \cite{Li and Lahiri (2010)} ("\code{ampl}"),
 (v) adjusted REML following \cite{Yoshimori and Lahiri (2014)} ("\code{amrl_yl}"),
 (vi) adjusted ML following \cite{Yoshimori and Lahiri (2014)} ("\code{ampl_yl}"),
-(vii) robustified maximum likelihood with robust eblup prediction following
+(vii) robustified maximum likelihood with robust EBLUP prediction following
 \cite{Warnholz (2017)} ("\code{reblup}"), 
-(viii) robustified maximum likelihood with robust and bias-corrected eblup 
+(viii) robustified maximum likelihood with robust and bias-corrected EBLUP 
 prediction following \cite{Warnholz (2017)} ("\code{reblupbc}"),
 (ix) estimation of the measurement error model of \cite{Ybarra and Lohr 
 (2008)} ("\code{me}"). Defaults to "\code{reml}".}
@@ -76,29 +76,29 @@ variance of the random effects. Defaults to \code{NULL}.}
 the standard or spatial Fay-Herriot model is chosen. Defaults to \code{1.345}. 
 For detailed information, please refer to \cite{Warnholz (2016)}.}
 
-\item{c}{numeric multiplier constant used in the bias corrected version of the 
+\item{mult_constant}{numeric multiplier constant used in the bias corrected version of the 
 robust estimation methods. Required argument when the robust version of 
 the standard or spatial Fay-Herriot model is chosen. Default is to make no 
-correction for realizations of direct estimator within \code{c = 1} times the 
-standard deviation of direct estimator. For detailed information, please refer 
-to \cite{Warnholz (2016)}.}
+correction for realizations of direct estimator within \code{mult_constant = 1} 
+times the standard deviation of direct estimator. For detailed information, 
+please refer to \cite{Warnholz (2016)}.}
 
 \item{transformation}{a character that determines the type of transformation 
 of the dependent variable and of the sampling variances. Methods that can be chosen
 (i) no transformation ("\code{no}"),
 (ii) log transformation ("\code{log}") of the dependent variable and of 
-the sampling variances following \cite{Neves et al. (2013)}, 
+the sampling variances, 
 (iii) arcsin transformation ("\code{arcsin}") of the dependent variable and of 
-the sampling variances following \cite{Jiang et al. (2001)}. Defaults to "\code{no}".}
+the sampling variances following. Defaults to "\code{no}". For more information, 
+how the direct estimate and its variance are transformed, please see the package 
+vignette "A Framework for Producing Small Area Estimates Based on Area-Level Models in R".}
 
 \item{backtransformation}{a character that determines the type of backtransformation 
 of the EBLUPs and MSE estimates. Required argument when a transformation is chosen. 
 Available methods are 
-(i) crude bias-correction following \cite{Neves et al. (2013)} and 
-\cite{Rao and Molina (2015)} when the log transformation is chosen 
-("\code{bc_crude}"),
-(ii) bias-correction following \cite{Slud and Maiti (2006)} when the 
-log transformations is chosen ("\code{bc_sm}"),
+(i) crude bias-correction following \cite{Rao (2015)} when the log transformation 
+is chosen ("\code{bc_crude}"), (ii) bias-correction following \cite{Slud and Maiti (2006)} 
+when the log transformations is chosen ("\code{bc_sm}"),
 (iii) naive back transformation when the arcsin transformation 
 is chosen ("\code{naive}"),
 (iii) bias-corrected back transformation following \cite{Hadam et al. (2020)} 
@@ -168,34 +168,31 @@ robust extensions of the Fay-Herriot model. For an extensive overview of the pos
 MSE options, please refer to the vignette. Required argument when 
 \code{MSE = TRUE}. Defaults to "\code{analytical}".}
 
-\item{B}{a number determining the number of bootstrap iterations. When a 
-bootstrap MSE estimator is chosen, \code{B} regulates the MSE estimation. 
-When the standard FH model is applied and \code{B} is not \code{NULL}, the 
-information criteria by Marhuenda et al. (2014) are computed. The number must 
-be greater than 1. Defaults to 50. For practical applications, 
-values larger than 200 are recommended.}
+\item{B}{either a single number or a numeric vector with two elements. The 
+single number or the first element defines the number of bootstrap iterations 
+when a bootstrap MSE estimator is chosen. When the standard FH 
+model is applied and the information criteria by Marhuenda et al. (2014) 
+should be computed, the second element of \code{B} is needed and must be 
+greater than 1. Defaults to c(50,0). For practical applications, values larger 
+than 200 are recommended.}
 
 \item{seed}{an integer to set the seed for the random number generator. For 
 the usage of random number generation see details. If seed is set to 
 \code{NULL}, seed is chosen randomly. Defaults to \code{123}.}
 }
 \value{
-An object of class "fh", "model" and "emdi" that provides estimators 
+An object of class "fh", "emdi" that provides estimators 
 for regional disaggregated indicators like means and ratios and optionally 
-corresponding MSE estimates. Generic functions such as \code{\link{compare}},
-\code{\link{compare_plot}}, \code{\link{estimators}}, \code{\link{print}}, 
-\code{\link{plot}}, \code{\link{step}} and \code{\link{summary}} have methods 
-that can be used to obtain further information. Additionally, for the standard 
-Fay-Herriot model that is estimated via ML variance estimation a model selection 
-function is provided (\code{\link{step}}). See \code{\link{emdiObject}} for 
-descriptions of components of objects of class "fh".
+corresponding MSE estimates. Several generic functions have methods for the 
+returned object. For a full list and descriptions of the components of objects 
+of class "emdi", see \code{\link{emdiObject}}.
 }
 \description{
 Function \code{fh} estimates indicators using the Fay-Herriot approach by
 \cite{Fay and Herriot (1979)}. Empirical best linear unbiased predictors 
 (EBLUPs) and mean squared error (MSE) estimates are provided. Additionally, 
 different extensions of the standard Fay-Herriot model are available: \cr 
-Adjusted estimation methods for the variance of the random effects (see also \cite{Li 
+Adjusted estimation methods for the variance of the random effects (see \cite{Li 
 and Lahiri (2010)} and \cite{Yoshimori and Lahiri (2014)}) are offered. Log 
 and arcsin transformation for the dependent variable and two types of 
 backtransformation can be chosen - a crude version
@@ -204,7 +201,7 @@ variables and a naive and bias-corrected version following
 \cite{Hadam et al. (2020)} for arcsin transformed variables. A spatial extension 
 to the Fay-Herriot model following \cite{Petrucci and Salvati (2006)} is also 
 included. In addition, it is possible to estimate a robust version of the 
-standard and of the spatial model (see also \cite{Warnholz (2017)}). Finally, 
+standard and of the spatial model (see \cite{Warnholz (2016)}). Finally, 
 a Fay-Herriot model can be estimated when the auxiliary information is measured 
 with error following \cite{Ybarra and Lohr (2008)}.
 }
@@ -241,7 +238,7 @@ MSE = TRUE)
 fh_arcsin <- fh(fixed = MTMED ~ cash + age_ben + rent + house_allow,
 vardir = "Var_MTMED", combined_data = combined_data, domains = "Domain", 
 method = "ml", transformation = "arcsin", backtransformation = "bc", 
-eff_smpsize = "n", MSE = TRUE, mse_type = "boot", B = 50)
+eff_smpsize = "n", MSE = TRUE, mse_type = "boot", B = c(50,0))
 
 # Example 3: Spatial Fay-Herriot model
 # Load proximity matrix
@@ -252,11 +249,9 @@ correlation = "spatial", corMatrix = eusilcA_prox, MSE = TRUE,
 mse_type = "analytical")
 
 # Example 4: Robust Fay-Herriot model 
-# Please note that the example runs for several minutes. For a short check
-# change B to a lower value.
 fh_robust <- fh(fixed = Mean ~ cash + self_empl, vardir = "Var_Mean", 
 combined_data = combined_data, domains = "Domain", method = "reblupbc", 
-k = 1.345, c = 1, MSE = TRUE, mse_type = "pseudo")
+k = 1.345, mult_constant = 1, MSE = TRUE, mse_type = "pseudo")
 
 # Example 5: Ybarra-Lohr model
 # Create MSE array
@@ -276,7 +271,6 @@ Chen S., Lahiri P. (2002), A weighted jackknife MSPE estimator in small-area
 estimation, "Proceeding of the Section on Survey Research Methods", American 
 Statistical Association, 473 - 477. \cr \cr
 Datta, G. S. and Lahiri, P. (2000), A unified measure of uncertainty of 
-estimated best linear unbiased predictors in small area estimation problems, 
 Statistica Sinica 10(2), 613-627. \cr \cr
 Fay, R. E. and Herriot, R. A. (1979), Estimates of income for small places:
 An application of James-Stein procedures to census data, Journal of the 
@@ -287,7 +281,7 @@ errors under a multivariate Fay-Herriot model. Computational Statistics &
 Data Analysis, 52, 5242–5252. \cr \cr
 Hadam, S., Wuerz, N. and Kreutzmann, A.-K. (2020), Estimating 
 regional unemployment with mobile network data for Functional Urban Areas in 
-Germany, Freie Universitaet Berlin. \cr \cr
+Germany, Refubium - Freie Universitaet Berlin Repository, 1-28. \cr \cr
 Jiang, J., Lahiri, P., Wan, S.-M. and Wu, C.-H. (2001), Jackknifing in the 
 Fay–Herriot model with an example. In Proc. Sem. Funding Opportunity in 
 Survey Research, Washington DC: Bureau of Labor Statistics, 75–97. \cr \cr
@@ -313,11 +307,11 @@ Slud, E. and Maiti, T. (2006), Mean-squared error estimation in transformed
 Fay-Herriot models, Journal of the Royal Statistical Society:Series B 68(2),
 239-257.\cr \cr
 Warnholz, S. (2016), saeRobust: Robust small area estimation. R package. \cr \cr
+Warnholz, S. (2016b). Small area estimation using robust extensions to area 
+level models. Ph.D. thesis, Freie Universitaet Berlin. \cr \cr
 Ybarra, L. and Lohr, S. (2008), Small area estimation when auxiliary 
 information is measured with error, Biometrika, 95(4), 919-931.\cr \cr
 Yoshimori, M. and Lahiri, P. (2014), A new adjusted maximum likelihood method
 for the Fay-Herriot small area model, Journal of Multivariate Analysis 124, 
-281-294. \cr \cr
-Warnholz, S. (2016b). Small area estimation using robust extensions to area 
-level models. Ph.D. thesis, Freie Universitaet Berlin.
+281-294.
 }
