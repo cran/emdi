@@ -1,6 +1,6 @@
-ed1845b9e6899289bd1ace5e0e9de507 *DESCRIPTION
+b47dde923fe1287514dfcdd96791dc85 *DESCRIPTION
 47a5f3de8a0a2fb109d080edf2bafb23 *NAMESPACE
-6a1f19676d358a6ee8369f24aa7c9625 *NEWS.md
+c0bf8ebeb5b7f2a5d21ea51a83284dd6 *NEWS.md
 677391dc91b8d93b416716e72db6a51d *R/FH.R
 d53c46b72c43eefd86cc0fe176b5f028 *R/auxiliary_functions.R
 1fde7c4a087fef3e337caa6b0c729f58 *R/back_transformation.R
@@ -54,7 +54,7 @@ b799b02592f6671be59d4a4176fe2bb3 *R/print.emdi.R
 92e6b48fe4c383183b158b7760440fc3 *R/qqnorm.R
 8cb0a8a88682293bc71ed2f9046753a2 *R/spatialcor.R
 472fd7590a9ea0a110d8206b3c385a33 *R/stats_methods.R
-05381547a1c4d573680b2407d5f86532 *R/step.R
+d7c83b3975dca29fdd3ecb3f10ab5095 *R/step.R
 efeb1c6c50c3a5f9a8abf3b7290f350f *R/summary.direct.R
 86f8101a3107b177a136db22b19be7be *R/summary.ebp.R
 e2a091190ff44ca85674fe0cbce8b631 *R/summary.emdi.R
@@ -64,8 +64,8 @@ e2a091190ff44ca85674fe0cbce8b631 *R/summary.emdi.R
 985629ac85304a9e00426f76282a8567 *R/write.excel.emdi.R
 fd959bc89261a342dad11b46b84e5cf3 *R/write.ods.emdi.R
 229b265bf3e6ba00b1a3f4d8390116af *README.md
-15f947639bf9e8ec8629701eece5fdd3 *build/partial.rdb
-1338ba1136d7925bf718b3befaa482a5 *build/vignette.rds
+242e247b9e7679da126db25907f8c0a1 *build/partial.rdb
+f6e77b626e54480caa3e0053754451e8 *build/vignette.rds
 701c242c65f3fcd660bc0d04c261aa95 *data/eusilcA_pop.rda
 1a7c053ba449930171dff7d47bdca34e *data/eusilcA_popAgg.rda
 a1c314d7fb0991b6a018bf00bb9e7064 *data/eusilcA_prox.rda
@@ -110,7 +110,7 @@ a651afd5a7c5a2af7bbb07cd5f3f79d4 *man/predict.emdi.Rd
 8e443e1c35455bb6abfe83cbd60f4f58 *man/qqnorm.emdi.Rd
 1bb8c2dc474af0f402bb0f47366e58be *man/ranef.Rd
 9f7ac4e53af7dcab9e1c6bccaf888f36 *man/spatialcor.tests.Rd
-07eb51da279e22ff79a5c6208d167a65 *man/step.Rd
+958816bcc83db2d2ac4263a6f2a5adae *man/step.Rd
 14c018fc6823e7dec9b66a87ebada318 *man/write.excel.Rd
 cc019d93889cd9e1d952a16ce7bcdd44 *tests/testthat.R
 ca07a0eabd7a9dc8d2c478df8f6c3036 *tests/testthat/Direct/arpr_all.csv
@@ -168,7 +168,7 @@ c4f057d1c059f1b6c463c978efcc2c34 *tests/testthat/FH/milk.RData
 ad73d58c5c25180a09098d1b0275fe0f *tests/testthat/test_S3_methods.R
 656d0055fe1911ead979ded3371b71ef *tests/testthat/test_data_transformation.R
 6f17f07bd5d3c6a0da7ab8fe6ec685b5 *tests/testthat/test_direct_estimation.R
-20a2b6a5529a98bff19149d18dc5f4ac *tests/testthat/test_fh_std_spatial_robust.R
+7d375b82decc4cf697cf80a23438f4e4 *tests/testthat/test_fh_std_spatial_robust.R
 5d92a412e1445ee0e31e9436267bdc44 *tests/testthat/test_fh_transformation.R
 f18a62a79faaf97d8ddff0342c8c7b93 *tests/testthat/test_fh_variance.R
 2d765ec224d93c6d32f9d239cdcc903e *tests/testthat/test_optimal_par.R

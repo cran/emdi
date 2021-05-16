@@ -1,7 +1,7 @@
 Package: emdi
 Title: Estimating and Mapping Disaggregated Indicators
-Version: 2.0.2
-Date: 2021-02-03
+Version: 2.0.3
+Date: 2021-05-15
 Authors@R: c(person("Sylvia", "Harmening", role="aut", email = "sylvia.harmening@fu-berlin.de"), 
     person("Ann-Kristin", "Kreutzmann", role="aut", email="ann-kristin.kreutzmann@fu-berlin.de"),
     person("Soeren", "Pannier", role=c("aut", "cre"), email="soeren.pannier@fu-berlin.de"),
@@ -37,7 +37,7 @@ Imports: nlme, moments, ggplot2, MuMIn, gridExtra, openxlsx, reshape2,
 Suggests: testthat, R.rsp, simFrame, laeken, rgeos, maptools, graphics
 VignetteBuilder: R.rsp
 NeedsCompilation: no
-Packaged: 2021-02-03 16:49:43 UTC; span
+Packaged: 2021-05-15 20:59:47 UTC; Soeren
 Author: Sylvia Harmening [aut],
   Ann-Kristin Kreutzmann [aut],
   Soeren Pannier [aut, cre],
@@ -49,4 +49,4 @@ Author: Sylvia Harmening [aut],
   Nora Würz [aut]
 Maintainer: Soeren Pannier <soeren.pannier@fu-berlin.de>
 Repository: CRAN
-Date/Publication: 2021-02-03 17:10:03 UTC
+Date/Publication: 2021-05-16 22:30:28 UTC
