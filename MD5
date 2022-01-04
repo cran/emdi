@@ -1,6 +1,6 @@
-06a49e7adf783e3941bf4f8998a297a0 *DESCRIPTION
+5509873d8df3bc17a34ab72095fb82c7 *DESCRIPTION
 cfbe012d51dd8b68e97aa188423edb9c *NAMESPACE
-aa526cd6335cff4f6524ae331638532c *NEWS.md
+ed5c44200344b626506b4c3dd35e53de *NEWS.md
 677391dc91b8d93b416716e72db6a51d *R/FH.R
 d53c46b72c43eefd86cc0fe176b5f028 *R/auxiliary_functions.R
 1fde7c4a087fef3e337caa6b0c729f58 *R/back_transformation.R
@@ -59,7 +59,7 @@ efeb1c6c50c3a5f9a8abf3b7290f350f *R/summary.direct.R
 2bc38d0fc839704a03dd91e0bbe202f3 *R/summary.ebp.R
 e2a091190ff44ca85674fe0cbce8b631 *R/summary.emdi.R
 4601c2ce422dbf14ae153fa1e73f7835 *R/summary.fh.R
-1835ab00a68c48753dfb8893dca8bd02 *R/transformation_functions.R
+e266cdac8b66fe227eb32fc8135270d7 *R/transformation_functions.R
 886d4969bb8a5c4066a7110454c53851 *R/variable_selection.R
 772f9613dfb9aa74d8c2bb92968813ec *R/write.excel.emdi.R
 fd959bc89261a342dad11b46b84e5cf3 *R/write.ods.emdi.R
