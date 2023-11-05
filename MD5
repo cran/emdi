@@ -1,10 +1,10 @@
-9327a305fe35485cdcb088777116bc38 *DESCRIPTION
-cfbe012d51dd8b68e97aa188423edb9c *NAMESPACE
-17bac8230c4c963731eab2ec7bac4752 *NEWS.md
+8bc55dcf9b035f04534566fee8f06a36 *DESCRIPTION
+a4fbe98d327fa1aa4063b7973d631b1a *NAMESPACE
+d41815bec2fec26b69b1cec7dfcac927 *NEWS.md
 f4879a90553e6f817d68e5c028e0cb1d *R/FH.R
 28a3a548c16cc9bf55afd74df25df719 *R/auxiliary_functions.R
 8da6dcb1af44f5350ed87eb78b63a1e0 *R/back_transformation.R
-3c54869b0e7e29be430685b4ccfe4fee *R/benchmark.R
+a0eaed27972a603af4421183d8834b9f *R/benchmark.R
 40b6d8e7a9639c7a9b0239d5e95515c7 *R/check_compare_arguments.R
 56b724df6b1b8403255467561a48d5ba *R/check_direct_arguments.R
 b8f99df87bf1bc93756e601ea1e17d72 *R/check_ebp_arguments.R
@@ -25,7 +25,7 @@ f488db3ae042cb8593d6c37c8e9f85ab *R/compare_plot.ebp.R
 188259f0ce244bc955ae430d3584d236 *R/eblup.R
 623cdac91a254297cf461ef2dd4b40be *R/eblup_robust.R
 f9696c79e330df7dd6d18baddaba0e34 *R/ebp.R
-1b975f370e4c3eb7e29f47d48b0b6c77 *R/emdi.R
+c8a63bbefa6a126ff30a0a58adccd4b9 *R/emdi.R
 50c805eeedb505ed228f78818913949b *R/emdiObject.R
 cbe43c1a99b272cefecaa9e93de8a228 *R/estim_sigmau2.R
 2f6c113d5828db917473dc1c189fc8fa *R/estimators.emdi.R
@@ -37,8 +37,8 @@ e9672954ca82497209cff78356542f59 *R/eusilcA_prox.R
 412cbf0eb92379b5bed3fd05c66dd050 *R/framework_direct.R
 36c5e526ed74e1ae9fb3eb6e0680db53 *R/framework_ebp.R
 bed9e73fc3fc420adc2f15736659f5e3 *R/framework_fh.R
-73de6b8e9e32d7bb9813989f9b1221c8 *R/load_shape.R
-814974a491475c2c55aaa5e498fcd46b *R/map_plot.R
+fb2d37809b7d4d829532abc6609ef46b *R/load_shape.R
+84447bbcb29f141ed5b8e5b962701ee0 *R/map_plot.R
 8f136cac7b75c1314681739394137bd2 *R/mse.R
 b006bbbba6262c1d97bc57f18ec18fe3 *R/mse_emdi.R
 98d8e8b5e7287f43682111d314261acb *R/mse_estimation.R
@@ -78,8 +78,8 @@ a1a6102a6281a13a7e3735344d39dcff *inst/COPYRIGHTS
 ca09aff0100ecaf0a06e8649cf19d935 *inst/doc/vignette_emdi.pdf.asis
 90fef281ba8e406f5b2e0b8e4368769e *inst/doc/vignette_fh.pdf
 d750ca6bfb451dc83074424c4e8e6387 *inst/doc/vignette_fh.pdf.asis
-b091322f9f2e6c7ba1add41919b2c4a8 *inst/shapes/shape_austria_dis.rda
-c9c8aabbc36363f4942d7a48395369e6 *man/benchmark.Rd
+0dc9cd8851f1346e92cffc014f59744d *inst/shapes/shape_austria_dis.rda
+161578f2836bc5858132458cb2475851 *man/benchmark_emdi.Rd
 bc60ba89a379981dcf7480d8fbefb64c *man/combine_data.Rd
 e4cc3d504eaaf48499d81b008d430bc3 *man/compare.Rd
 90a430db537aef3e177c0853ea0e1031 *man/compare_plot.Rd
@@ -104,8 +104,8 @@ b354ad39eb9e5e6fb09ef867e50024d2 *man/fh.Rd
 7779707afcdeb3e48f019d03a9bc5f90 *man/getResponse.Rd
 4c87cd0e340657b32acb27aab3859a62 *man/getVarCov.Rd
 6c64f1f9bcd46b370f47abb509880695 *man/intervals.Rd
-5806c52d4f32647a2eb060b719fb329c *man/load_shapeaustria.Rd
-9535e3342139212fe94a24fda260adb5 *man/map_plot.Rd
+8e2f44e8720b823c60c39f5394d618b2 *man/load_shapeaustria.Rd
+0f82e7028da62309de7576900f41eae7 *man/map_plot.Rd
 9a438d8ad1b55db83ba67d9f0543f65f *man/plot.emdi.Rd
 532c880ed3d995abb51d2082f1d5f03e *man/predict.emdi.Rd
 3b995823cdb1c029a6c2d054b9211e0d *man/qqnorm.emdi.Rd
