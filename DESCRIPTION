@@ -1,7 +1,7 @@
 Package: emdi
 Title: Estimating and Mapping Disaggregated Indicators
-Version: 2.2.1
-Date: 2023-10-30
+Version: 2.2.2
+Date: 2024-06-11
 Authors@R: c(person("Sylvia", "Harmening", role="aut", email = "sylvia.harmening@fu-berlin.de"), 
     person("Ann-Kristin", "Kreutzmann", role="aut", email="ann-kristin.kreutzmann@fu-berlin.de"),
     person("Soeren", "Pannier", role=c("aut", "cre"), email="soeren.pannier@fu-berlin.de"),
@@ -33,14 +33,14 @@ URL: https://github.com/SoerenPannier/emdi
 LazyData: true
 Encoding: UTF-8
 Copyright: inst/COPYRIGHTS
-RoxygenNote: 7.2.3
-Imports: nlme, moments, ggplot2, MuMIn, gridExtra, openxlsx, reshape2,
-        stats, stringr, parallelMap, HLMdiag, parallel, boot, MASS,
-        readODS, formula.tools, saeRobust, rlang, spdep
+RoxygenNote: 7.3.1
+Imports: nlme, moments, ggplot2, gridExtra, openxlsx, reshape2, stats,
+        stringr, parallelMap, HLMdiag, parallel, boot, MASS, readODS,
+        formula.tools, saeRobust, rlang, spdep
 Suggests: testthat, R.rsp, simFrame, laeken, sf, graphics
 VignetteBuilder: R.rsp
 NeedsCompilation: no
-Packaged: 2023-10-30 09:59:09 UTC; span
+Packaged: 2024-06-11 19:54:10 UTC; span
 Author: Sylvia Harmening [aut],
   Ann-Kristin Kreutzmann [aut],
   Soeren Pannier [aut, cre],
@@ -53,4 +53,4 @@ Author: Sylvia Harmening [aut],
   Nora Würz [aut]
 Maintainer: Soeren Pannier <soeren.pannier@fu-berlin.de>
 Repository: CRAN
-Date/Publication: 2023-11-05 12:40:07 UTC
+Date/Publication: 2024-06-11 20:20:02 UTC
